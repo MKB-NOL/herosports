@@ -162,6 +162,204 @@
     border-radius: 8px;
   }
   
+  /* Related articles section */
+  .related-articles {
+    margin: 40px 0 30px;
+    padding: 20px 0;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .related-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+  }
+  
+  .related-article {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .related-article:hover {
+    transform: translateY(-3px);
+  }
+  
+  .related-image {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+  }
+  
+  .related-content {
+    padding: 12px;
+  }
+  
+  .related-article-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Comments section */
+  .comments-section {
+    margin: 40px 0;
+  }
+  
+  .comments-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+  }
+  
+  .comment-form {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+  }
+  
+  .form-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .form-input:focus {
+    outline: none;
+    border-color: #000;
+  }
+  
+  textarea.form-input {
+    min-height: 100px;
+    resize: vertical;
+  }
+  
+  .submit-btn {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .submit-btn:hover {
+    background: #333;
+  }
+  
+  .submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Comments list */
+  .comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .comment {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  
+  .comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .comment-author {
+    font-weight: bold;
+    color: #000;
+  }
+  
+  .comment-date {
+    color: #777;
+    font-size: 0.9rem;
+  }
+  
+  .comment-text {
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+  
+  .comment-actions {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .comment-action {
+    background: none;
+    border: none;
+    color: #0066cc;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0;
+  }
+  
+  .comment-action:hover {
+    text-decoration: underline;
+  }
+  
+  .reply-form {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f5f5f5;
+    border-radius: 4px;
+  }
+  
+  /* Replies */
+  .replies {
+    margin-top: 15px;
+    padding-left: 20px;
+    border-left: 3px solid #eee;
+  }
+  
+  .reply {
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .reply:last-child {
+    border-bottom: none;
+  }
+  
   /* Footer */
   footer {
     background-color: #000;
@@ -236,6 +434,24 @@
     background-color: #555;
   }
   
+  .cache-control {
+    margin-top: 15px;
+  }
+  
+  .wipe-cache {
+    background: none;
+    border: 1px solid #666;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .wipe-cache:hover {
+    background: #333;
+  }
+  
   .copyright {
     text-align: center;
     margin-top: 20px;
@@ -272,12 +488,20 @@
       width: 90%;
     }
     
+    .related-grid {
+      grid-template-columns: 1fr;
+    }
+    
     .footer-section {
       min-width: 100%;
     }
     
     .article-content .media iframe {
       height: 250px;
+    }
+    
+    .replies {
+      padding-left: 10px;
     }
   }
 </style>
@@ -296,6 +520,38 @@
   <div class="article-container">
     <div id="article-content">
       <div class="loading">Loading article...</div>
+    </div>
+    
+    <!-- Related articles section -->
+    <div class="related-articles" id="relatedArticles" style="display: none;">
+      <h3 class="related-title">You might also like</h3>
+      <div class="related-grid" id="relatedGrid">
+        <!-- Related articles will be loaded here -->
+      </div>
+    </div>
+    
+    <!-- Comments section -->
+    <div class="comments-section">
+      <h3 class="comments-title">Comments</h3>
+      
+      <!-- Comment form -->
+      <div class="comment-form" id="commentForm">
+        <h4 class="form-title">Add a comment</h4>
+        <form id="commentFormElement">
+          <div class="form-group" id="nameFormGroup">
+            <input type="text" class="form-input" id="commentName" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <textarea class="form-input" id="commentText" placeholder="Your comment" required></textarea>
+          </div>
+          <button type="submit" class="submit-btn" id="submitComment">Post Comment</button>
+        </form>
+      </div>
+      
+      <!-- Comments list -->
+      <div class="comments-list" id="commentsList">
+        <!-- Comments will be loaded here -->
+      </div>
     </div>
   </div>
 </main>
@@ -326,6 +582,9 @@
       <h3>Admin</h3>
       <p>Site administration</p>
       <a href="pass.html" class="admin-link">ADMIN LOGIN</a>
+      <div class="cache-control">
+        <button class="wipe-cache" id="wipeCache">Wipe Cache</button>
+      </div>
     </div>
   </div>
   
@@ -337,7 +596,20 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+  import { 
+    getFirestore, 
+    doc, 
+    getDoc, 
+    collection, 
+    addDoc, 
+    query, 
+    orderBy, 
+    onSnapshot,
+    serverTimestamp,
+    getDocs,
+    where,
+    limit
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
   
   const firebaseConfig = {
     apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
@@ -353,31 +625,44 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   
+  // Global variables
+  let currentArticleId = null;
+  let userName = localStorage.getItem('userName') || '';
+  let replyingToCommentId = null;
+  
   document.addEventListener('DOMContentLoaded', function() {
     // Get article ID from URL
     const urlParams = new URLSearchParams(window.location.search);
-    const articleId = urlParams.get('id');
+    currentArticleId = urlParams.get('id');
     
-    if (!articleId) {
-      document.getElementById('article-content').innerHTML = `
-        <div class="error-message">
-          <h2>Article Not Found</h2>
-          <p>The requested article could not be found.</p>
-          <a href="index.html">Return to Home</a>
-        </div>
-      `;
+    if (!currentArticleId) {
+      showError('Article Not Found', 'The requested article could not be found.');
       return;
     }
     
-    // Load article from Firestore
-    loadArticle(articleId);
-    
     // Set up back button
     document.getElementById('backButton').addEventListener('click', function() {
-      // Check if we have a return URL in localStorage
       const returnUrl = localStorage.getItem('returnUrl') || 'index.html';
       window.location.href = returnUrl;
     });
+    
+    // Set up comment form
+    const commentForm = document.getElementById('commentFormElement');
+    commentForm.addEventListener('submit', handleCommentSubmit);
+    
+    // Set up wipe cache button
+    const wipeCacheBtn = document.getElementById('wipeCache');
+    wipeCacheBtn.addEventListener('click', handleWipeCache);
+    
+    // Check if user has a saved name
+    if (userName) {
+      document.getElementById('nameFormGroup').style.display = 'none';
+    }
+    
+    // Load article and related content
+    loadArticle(currentArticleId);
+    loadRelatedArticles(currentArticleId);
+    loadComments(currentArticleId);
   });
   
   async function loadArticle(articleId) {
@@ -389,23 +674,11 @@
         const article = docSnap.data();
         renderArticle(article);
       } else {
-        document.getElementById('article-content').innerHTML = `
-          <div class="error-message">
-            <h2>Article Not Found</h2>
-            <p>The requested article could not be found.</p>
-            <a href="index.html">Return to Home</a>
-          </div>
-        `;
+        showError('Article Not Found', 'The requested article could not be found.');
       }
     } catch (error) {
       console.error('Error loading article:', error);
-      document.getElementById('article-content').innerHTML = `
-        <div class="error-message">
-          <h2>Error Loading Article</h2>
-          <p>There was a problem loading the article. Please try again later.</p>
-          <a href="index.html">Return to Home</a>
-        </div>
-      `;
+      showError('Error Loading Article', 'There was a problem loading the article. Please try again later.');
     }
   }
   
@@ -431,6 +704,277 @@
     
     // Process embedded media after the content is rendered
     processEmbeddedMedia();
+  }
+  
+  async function loadRelatedArticles(currentArticleId) {
+    try {
+      // Get 3 random articles excluding the current one
+      const articlesQuery = query(
+        collection(db, 'articles'),
+        where('__name__', '!=', currentArticleId),
+        limit(10) // Get more than needed to randomize
+      );
+      
+      const articlesSnapshot = await getDocs(articlesQuery);
+      const articles = articlesSnapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        ...doc.data() 
+      }));
+      
+      // Shuffle and take 3 articles
+      const shuffled = [...articles].sort(() => 0.5 - Math.random());
+      const relatedArticles = shuffled.slice(0, 3);
+      
+      if (relatedArticles.length > 0) {
+        renderRelatedArticles(relatedArticles);
+      }
+    } catch (error) {
+      console.error('Error loading related articles:', error);
+      // Hide related articles section if there's an error
+      document.getElementById('relatedArticles').style.display = 'none';
+    }
+  }
+  
+  function renderRelatedArticles(articles) {
+    const relatedGrid = document.getElementById('relatedGrid');
+    const relatedSection = document.getElementById('relatedArticles');
+    
+    relatedGrid.innerHTML = '';
+    
+    articles.forEach(article => {
+      const articleElement = document.createElement('div');
+      articleElement.className = 'related-article';
+      articleElement.setAttribute('data-id', article.id);
+      
+      // Strip HTML tags from description for preview
+      const plainDescription = article.description ? 
+        article.description.replace(/<[^>]*>/g, '').substring(0, 100) + '...' : 
+        'No description available';
+      
+      articleElement.innerHTML = `
+        ${article.image ? `<img src="${article.image}" alt="${article.title}" class="related-image">` : 
+          `<div class="related-image" style="background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-image" style="font-size: 2rem; color: #ccc;"></i>
+          </div>`}
+        <div class="related-content">
+          <h4 class="related-article-title">${article.title || 'Untitled Article'}</h4>
+        </div>
+      `;
+      
+      articleElement.addEventListener('click', () => {
+        // Save the current page as return URL
+        localStorage.setItem('returnUrl', window.location.href);
+        window.location.href = `view.html?id=${article.id}`;
+      });
+      
+      relatedGrid.appendChild(articleElement);
+    });
+    
+    relatedSection.style.display = 'block';
+  }
+  
+  function loadComments(articleId) {
+    try {
+      const commentsQuery = query(
+        collection(db, 'articles', articleId, 'comments'),
+        orderBy('timestamp', 'desc')
+      );
+      
+      // Set up real-time listener for comments
+      onSnapshot(commentsQuery, (snapshot) => {
+        const comments = [];
+        snapshot.forEach((doc) => {
+          comments.push({ id: doc.id, ...doc.data() });
+        });
+        renderComments(comments);
+      }, (error) => {
+        console.error('Error loading comments:', error);
+        document.getElementById('commentsList').innerHTML = `
+          <div class="error">Error loading comments. Please try again later.</div>
+        `;
+      });
+    } catch (error) {
+      console.error('Error setting up comments listener:', error);
+    }
+  }
+  
+  function renderComments(comments) {
+    const commentsList = document.getElementById('commentsList');
+    
+    if (comments.length === 0) {
+      commentsList.innerHTML = `
+        <div class="no-comments">No comments yet. Be the first to comment!</div>
+      `;
+      return;
+    }
+    
+    commentsList.innerHTML = '';
+    
+    comments.forEach(comment => {
+      const commentElement = createCommentElement(comment);
+      commentsList.appendChild(commentElement);
+    });
+  }
+  
+  function createCommentElement(comment) {
+    const commentDiv = document.createElement('div');
+    commentDiv.className = 'comment';
+    commentDiv.setAttribute('data-comment-id', comment.id);
+    
+    // Format date
+    const date = comment.timestamp ? new Date(comment.timestamp.toDate()).toLocaleDateString() : 'Unknown date';
+    
+    commentDiv.innerHTML = `
+      <div class="comment-header">
+        <span class="comment-author">${comment.authorName || 'Anonymous'}</span>
+        <span class="comment-date">${date}</span>
+      </div>
+      <div class="comment-text">${escapeHtml(comment.text)}</div>
+      <div class="comment-actions">
+        <button class="comment-action reply-btn">Reply</button>
+      </div>
+    `;
+    
+    // Add reply functionality
+    const replyBtn = commentDiv.querySelector('.reply-btn');
+    replyBtn.addEventListener('click', () => {
+      // If already replying to this comment, hide the form
+      if (replyingToCommentId === comment.id) {
+        const existingForm = commentDiv.querySelector('.reply-form');
+        if (existingForm) {
+          existingForm.remove();
+        }
+        replyingToCommentId = null;
+        return;
+      }
+      
+      // Remove any other reply forms
+      document.querySelectorAll('.reply-form').forEach(form => form.remove());
+      
+      // Create reply form
+      const replyForm = document.createElement('div');
+      replyForm.className = 'reply-form';
+      replyForm.innerHTML = `
+        <div class="form-group">
+          <textarea class="form-input" placeholder="Your reply" required></textarea>
+        </div>
+        <button type="button" class="submit-btn post-reply">Post Reply</button>
+        <button type="button" class="comment-action cancel-reply" style="margin-left: 10px;">Cancel</button>
+      `;
+      
+      // Add event listeners
+      const postReplyBtn = replyForm.querySelector('.post-reply');
+      const cancelReplyBtn = replyForm.querySelector('.cancel-reply');
+      const replyTextarea = replyForm.querySelector('textarea');
+      
+      postReplyBtn.addEventListener('click', () => {
+        const replyText = replyTextarea.value.trim();
+        if (replyText) {
+          handleReplySubmit(comment.id, replyText);
+          replyForm.remove();
+          replyingToCommentId = null;
+        }
+      });
+      
+      cancelReplyBtn.addEventListener('click', () => {
+        replyForm.remove();
+        replyingToCommentId = null;
+      });
+      
+      commentDiv.appendChild(replyForm);
+      replyingToCommentId = comment.id;
+    });
+    
+    return commentDiv;
+  }
+  
+  async function handleCommentSubmit(e) {
+    e.preventDefault();
+    
+    const commentText = document.getElementById('commentText').value.trim();
+    let authorName = userName;
+    
+    // If user doesn't have a saved name, get it from the form
+    if (!authorName) {
+      authorName = document.getElementById('commentName').value.trim();
+      if (!authorName) {
+        alert('Please enter your name');
+        return;
+      }
+    }
+    
+    if (!commentText) {
+      alert('Please enter a comment');
+      return;
+    }
+    
+    const submitBtn = document.getElementById('submitComment');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Posting...';
+    
+    try {
+      // Save comment to Firestore
+      await addDoc(collection(db, 'articles', currentArticleId, 'comments'), {
+        authorName: authorName,
+        text: commentText,
+        timestamp: serverTimestamp()
+      });
+      
+      // If this is the first time user is commenting, save their name
+      if (!userName) {
+        userName = authorName;
+        localStorage.setItem('userName', userName);
+        document.getElementById('nameFormGroup').style.display = 'none';
+      }
+      
+      // Clear comment text
+      document.getElementById('commentText').value = '';
+      
+    } catch (error) {
+      console.error('Error posting comment:', error);
+      alert('Error posting comment. Please try again.');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Post Comment';
+    }
+  }
+  
+  async function handleReplySubmit(commentId, replyText) {
+    try {
+      // Save reply to Firestore
+      await addDoc(collection(db, 'articles', currentArticleId, 'comments', commentId, 'replies'), {
+        authorName: userName || 'Anonymous',
+        text: replyText,
+        timestamp: serverTimestamp()
+      });
+    } catch (error) {
+      console.error('Error posting reply:', error);
+      alert('Error posting reply. Please try again.');
+    }
+  }
+  
+  function handleWipeCache() {
+    const wipeCacheBtn = document.getElementById('wipeCache');
+    
+    // Clear localStorage
+    localStorage.removeItem('userName');
+    localStorage.removeItem('returnUrl');
+    
+    // Update UI
+    userName = '';
+    document.getElementById('nameFormGroup').style.display = 'block';
+    
+    // Show confirmation
+    wipeCacheBtn.textContent = 'Done!';
+    wipeCacheBtn.style.background = '#1DB954';
+    wipeCacheBtn.style.borderColor = '#1DB954';
+    
+    // Revert after 2 seconds
+    setTimeout(() => {
+      wipeCacheBtn.textContent = 'Wipe Cache';
+      wipeCacheBtn.style.background = '';
+      wipeCacheBtn.style.borderColor = '#666';
+    }, 2000);
   }
   
   function processCKEditorContent(content) {
@@ -487,9 +1031,26 @@
     return (match && match[2].length === 11) ? match[2] : null;
   }
   
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+  
+  function showError(title, message) {
+    const articleContent = document.getElementById('article-content');
+    articleContent.innerHTML = `
+      <div class="error-message">
+        <h2>${title}</h2>
+        <p>${message}</p>
+        <a href="index.html">Return to Home</a>
+      </div>
+    `;
+  }
+  
   // Save the page we came from when leaving this page
   window.addEventListener('beforeunload', function() {
-    localStorage.setItem('returnUrl', document.referrer || 'index.html');
+    localStorage.setItem('returnUrl', window.location.href);
   });
 </script>
 
