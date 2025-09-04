@@ -2,6 +2,26 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+  <!-- Favicon -->
+<link rel="icon" type="image/png" href="https://i.ibb.co/0f248e70fc4e7dffde307dd772823379/favicon.png">
+
+<!-- Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f248e">
+
+<!-- Social Graph / Open Graph -->
+<meta property="og:title" content="HERO Sports">
+<meta property="og:description" content="Hero Sports brings you the latest sports news, highlights, and stories from Europe and beyond. From football to basketball, we celebrate every sport updates on the pitch and beyond.">
+<meta property="og:image" content="https://i.ibb.co/xtwkBQmr/ALL-SPORTS-NEWS.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://herosports.netlify.app">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HERO Sports">
+<meta name="twitter:description" content="Hero Sports brings you the latest sports news, highlights, and stories from Europe and beyond. From football to basketball, we celebrate every sport updates on the pitch and beyond.">
+<meta name="twitter:image" content="https://i.ibb.co/xtwkBQmr/ALL-SPORTS-NEWS.png">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Search - HERO Sports</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto&display=swap" rel="stylesheet">
@@ -920,6 +940,13 @@
       </div>
     `;
   }
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js')
+  .then(() => console.log('Service Worker registered'))
+  .catch(err => console.log('Service Worker registration failed:', err));
+}
 </script>
 
 </body>
