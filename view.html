@@ -4,6 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>View Article - HERO Sports</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" href="https://i.ibb.co/BVZxK0L1/SPORTS-removebg-preview.png">
+
+<!-- Manifest -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f248e">
+
+<!-- Social Graph / Open Graph -->
+<meta property="og:title" content="HERO Sports">
+<meta property="og:description" content="Hero Sports brings you the latest sports news, highlights, and stories from Europe and beyond. From football to basketball, we celebrate every sport updates on the pitch and beyond.">
+<meta property="og:image" content="https://i.ibb.co/xtwkBQmr/ALL-SPORTS-NEWS.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://herosports.netlify.app">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HERO Sports">
+<meta name="twitter:description" content="Hero Sports brings you the latest sports news, highlights, and stories from Europe and beyond. From football to basketball, we celebrate every sport updates on the pitch and beyond.">
+<meta name="twitter:image" content="https://i.ibb.co/xtwkBQmr/ALL-SPORTS-NEWS.png">
+
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
@@ -561,10 +582,10 @@
     <div class="footer-section">
       <h3>Navigation</h3>
       <div class="footer-links">
-        <a href="index.html">Home</a>
-        <a href="index.html#news">News</a>
-        <a href="index.html#videos">Videos</a>
-        <a href="index.html#articles">Articles</a>
+        <a href="index2.html">Home</a>
+        <a href="index2.html#news">News</a>
+        <a href="index2.html#videos">Videos</a>
+        <a href="index2.html#articles">Articles</a>
       </div>
     </div>
     
@@ -640,10 +661,9 @@
       return;
     }
     
-    // Set up back button
+    // Set up back button - redirect to index2.html
     document.getElementById('backButton').addEventListener('click', function() {
-      const returnUrl = localStorage.getItem('returnUrl') || 'index.html';
-      window.location.href = returnUrl;
+      window.location.href = 'index2.html';
     });
     
     // Set up comment form
@@ -1043,16 +1063,17 @@
       <div class="error-message">
         <h2>${title}</h2>
         <p>${message}</p>
-        <a href="index.html">Return to Home</a>
+        <a href="index2.html">Return to Home</a>
       </div>
     `;
   }
-  
-  // Save the page we came from when leaving this page
-  window.addEventListener('beforeunload', function() {
-    localStorage.setItem('returnUrl', window.location.href);
-  });
 </script>
-
+ <script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js')
+  .then(() => console.log('Service Worker registered'))
+  .catch(err => console.log('Service Worker registration failed:', err));
+}
+</script>
 </body>
 </html>
