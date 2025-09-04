@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HERO Sports Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<style>
+  body {margin:0;font-family:'Roboto',sans-serif;background:#FDFDFD;color:#000;padding:0;}
+  header {display:flex;align-items:center;padding:10px 20px;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+  header img {height:50px;margin-right:10px;}
+  header h1 {font-size:1.5rem;font-weight:bold;}
+  nav {display:flex;justify-content:flex-start;background:#eee;padding:10px;}
+  nav button {margin-right:10px;padding:10px 20px;border:none;background:#000;color:#fff;cursor:pointer;font-weight:bold;}
+  nav button.active {background:#1DB954;}
+  .section {padding:20px;}
+  input, button, textarea {width:100%;padding:10px;margin:5px 0;border:1px solid #333;background:#fff;font-size:1rem;}
+  button {background:#000;color:#fff;cursor:pointer;}
+  button:hover {background:#333;}
+  label {font-weight:bold;}
+
+  /* Notification box */
+  #notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #333;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 5px;
+    display: none;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+
+  /* Loading overlay */
+  #loadingOverlay {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.4);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:9998;
+  }
+  #loadingOverlay span{
+    background:#fff;
+    padding:20px;
+    border-radius:5px;
+    font-weight:bold;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://i.ibb.co/65R703b/SPORTS-removebg-preview.png" alt="Logo">
+  <h1>HERO Sports</h1>
+</header>
+
+<nav>
+  <button id="tabArticles" class="active">Articles</button>
+  <button id="tabVideos">Videos</button>
+</nav>
+
+<!-- Articles Section -->
+<div id="articlesSection" class="section">
+  <h2>Post an Article</h2>
+  <label for="articleTitle">Title</label>
+  <input type="text" id="articleTitle" placeholder="Enter article title">
+
+  <label for="articleImage">Upload Image</label>
+  <input type="file" id="articleImage" accept="image/*">
+
+  <label for="articleDesc">Description</label>
+  <textarea id="articleDesc" rows="6" placeholder="Write your article description..."></textarea>
+
+  <button id="postArticle">Post Article</button>
+</div>
+
+<!-- Videos Section -->
+<div id="videosSection" class="section" style="display:none;">
+  <h2>Post a Video</h2>
+  <label for="videoTitle">Title</label>
+  <input type="text" id="videoTitle" placeholder="Enter video title">
+
+  <label for="videoLink">YouTube Link</label>
+  <input type="url" id="videoLink" placeholder="https://www.youtube.com/...">
+
+  <button id="postVideo">Post Video</button>
+</div>
+
+<!-- Notification box -->
+<div id="notification"></div>
+
+<!-- Loading overlay -->
+<div id="loadingOverlay"><span>Loading...</span></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+// Firebase setup
+const firebaseConfig = {
+    apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
+    authDomain: "muah-feed.firebaseapp.com",
+    databaseURL: "https://muah-feed-default-rtdb.firebaseio.com",
+    projectId: "muah-feed",
+    storageBucket: "muah-feed.firebasestorage.app",
+    messagingSenderId: "442314397706",
+    appId: "1:442314397706:web:65210aa85f2c43053667f3",
+    measurementId: "G-RD4CWTL6KG"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Tabs functionality
+const tabArticles = document.getElementById('tabArticles');
+const tabVideos = document.getElementById('tabVideos');
+const articlesSection = document.getElementById('articlesSection');
+const videosSection = document.getElementById('videosSection');
+
+tabArticles.addEventListener('click', ()=>{
+  tabArticles.classList.add('active');
+  tabVideos.classList.remove('active');
+  articlesSection.style.display='block';
+  videosSection.style.display='none';
+});
+tabVideos.addEventListener('click', ()=>{
+  tabVideos.classList.add('active');
+  tabArticles.classList.remove('active');
+  videosSection.style.display='block';
+  articlesSection.style.display='none';
+});
+
+// CKEditor for article description
+let editor;
+ClassicEditor.create(document.querySelector('#articleDesc')).then(ed => { editor = ed; }).catch(err => console.error(err));
+
+// Custom notification function
+function notify(message, success=true){
+  const box = document.getElementById('notification');
+  box.textContent = message;
+  box.style.background = success ? '#1DB954' : '#FF2D55';
+  box.style.display='block';
+  setTimeout(()=>{box.style.display='none';},4000);
+}
+
+// Loading overlay
+function showLoading(){ document.getElementById('loadingOverlay').style.display='flex'; }
+function hideLoading(){ document.getElementById('loadingOverlay').style.display='none'; }
+
+// Helper: upload image to imgbb
+async function uploadImageToImgBB(file){
+  try{
+    const formData = new FormData();
+    formData.append("image", file);
+    const apiKey = "0f248e70fc4e7dffde307dd772823379";
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+      method:'POST',
+      body: formData
+    });
+    const data = await res.json();
+    if(data.success) return data.data.url;
+    throw new Error('ImgBB upload failed');
+  } catch(err){
+    throw err;
+  }
+}
+
+// Post Article
+document.getElementById('postArticle').addEventListener('click', async ()=>{
+  const title = document.getElementById('articleTitle').value.trim();
+  const fileInput = document.getElementById('articleImage');
+  const file = fileInput.files[0];
+  const desc = editor.getData();
+  
+  if(!title || !file || !desc){
+    notify('Fill all fields!', false);
+    return;
+  }
+
+  try{
+    showLoading();
+    const imageUrl = await uploadImageToImgBB(file);
+    await addDoc(collection(db,'articles'),{
+      title,
+      image:imageUrl,
+      description:desc,
+      timestamp:Date.now()
+    });
+    notify('Article posted successfully!');
+    document.getElementById('articleTitle').value='';
+    fileInput.value='';
+    editor.setData('');
+  } catch(err){
+    console.error(err);
+    notify('Error posting article!', false);
+  } finally{
+    hideLoading();
+  }
+});
+
+// Post Video
+document.getElementById('postVideo').addEventListener('click', async ()=>{
+  const title = document.getElementById('videoTitle').value.trim();
+  const link = document.getElementById('videoLink').value.trim();
+  if(!title || !link){ notify('Fill all fields!', false); return;}
+  try{
+    showLoading();
+    await addDoc(collection(db,'videos'),{title,link,timestamp:Date.now()});
+    notify('Video posted successfully!');
+    document.getElementById('videoTitle').value='';
+    document.getElementById('videoLink').value='';
+  } catch(err){
+    console.error(err);
+    notify('Error posting video!', false);
+  } finally{
+    hideLoading();
+  }
+});
+
+// Auto redirect after 1 minute of inactivity
+let timer;
+function resetTimer(){ clearTimeout(timer); timer = setTimeout(()=>{window.location='pass.html';},60000);}
+['mousemove','mousedown','keypress','touchstart','scroll'].forEach(evt => document.addEventListener(evt,resetTimer));
+resetTimer();
+</script>
+
+</body>
+</html>
