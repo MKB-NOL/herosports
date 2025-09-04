@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>View Article - HERO Sports</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  body {
+    margin:0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #FDFDFD;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    display:flex;
+    align-items:center;
+    padding:10px 20px;
+    font-family: 'Oswald', sans-serif;
+    font-weight:700;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header img {
+    height:50px;
+    margin-right:10px;
+  }
+  .back-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  /* Article content */
+  .article-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+  }
+  
+  .article-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2.2rem;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+  
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  .article-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 25px;
+  }
+  
+  .article-content {
+    line-height: 1.7;
+    font-size: 1.1rem;
+  }
+  
+  .article-content p {
+    margin-bottom: 20px;
+  }
+  
+  .article-content h2, .article-content h3 {
+    font-family: 'Oswald', sans-serif;
+    margin: 30px 0 15px;
+  }
+  
+  .article-content img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+  
+  .article-content iframe {
+    width: 100%;
+    border-radius: 8px;
+    margin: 20px 0;
+    aspect-ratio: 16/9;
+  }
+  
+  .article-content a {
+    color: #0066cc;
+    text-decoration: underline;
+  }
+  
+  .article-content blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 20px;
+    margin-left: 0;
+    font-style: italic;
+    color: #555;
+  }
+  
+  /* Footer */
+  footer {
+    background-color: #000;
+    color: #fff;
+    padding: 30px 20px;
+    margin-top: auto;
+  }
+  
+  .footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .footer-section {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 20px;
+  }
+  
+  .footer-section h3 {
+    font-family: 'Oswald', sans-serif;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+  }
+  
+  .footer-links a {
+    display: block;
+    color: #ddd;
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: color 0.3s;
+  }
+  
+  .footer-links a:hover {
+    color: #fff;
+  }
+  
+  .footer-social a {
+    display: inline-block;
+    color: #fff;
+    background-color: #333;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 36px;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .footer-social a:hover {
+    background-color: #555;
+  }
+  
+  .admin-link {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 15px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .admin-link:hover {
+    background-color: #555;
+  }
+  
+  .copyright {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #444;
+    color: #999;
+    font-size: 0.9rem;
+  }
+  
+  .author-link {
+    color: #fff;
+    text-decoration: underline;
+    margin-left: 5px;
+  }
+  
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2rem;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .article-title {
+      font-size: 1.8rem;
+    }
+    
+    .article-content {
+      font-size: 1rem;
+    }
+    
+    .footer-section {
+      min-width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://i.ibb.co/65R703b/SPORTS-removebg-preview.png" alt="Logo">
+  <span>HERO Sports</span>
+  <button class="back-btn" id="backButton">
+    <i class="fas fa-arrow-left"></i> Back
+  </button>
+</header>
+
+<main>
+  <div class="article-container">
+    <div id="article-content">
+      <div class="loading">Loading article...</div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Navigation</h3>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#news">News</a>
+        <a href="index.html#videos">Videos</a>
+        <a href="index.html#articles">Articles</a>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h3>Follow Us</h3>
+      <div class="footer-social">
+        <a href="https://www.youtube.com/channel/UCvRf1s74zBL1Nptge-mZAug" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.youtube.com/@btemOfficial" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.instagram.com/he_r_o24/" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@hero_sports_allnews" target="_blank"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h3>Admin</h3>
+      <p>Site administration</p>
+      <a href="pass.html" class="admin-link">ADMIN LOGIN</a>
+    </div>
+  </div>
+  
+  <div class="copyright">
+    &copy; 2023 HERO Sports. All rights reserved.
+    <a href="https://mkbertrand.vercel.app/" class="author-link" target="_blank">Made by M. K. Bertrand</a>
+  </div>
+</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
+    authDomain: "muah-feed.firebaseapp.com",
+    databaseURL: "https://muah-feed-default-rtdb.firebaseio.com",
+    projectId: "muah-feed",
+    storageBucket: "muah-feed.firebasestorage.app",
+    messagingSenderId: "442314397706",
+    appId: "1:442314397706:web:65210aa85f2c43053667f3",
+    measurementId: "G-RD4CWTL6KG"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get article ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const articleId = urlParams.get('id');
+    
+    if (!articleId) {
+      document.getElementById('article-content').innerHTML = `
+        <div class="error-message">
+          <h2>Article Not Found</h2>
+          <p>The requested article could not be found.</p>
+          <a href="index.html">Return to Home</a>
+        </div>
+      `;
+      return;
+    }
+    
+    // Load article from Firestore
+    loadArticle(articleId);
+    
+    // Set up back button
+    document.getElementById('backButton').addEventListener('click', function() {
+      // Check if we have a return URL in localStorage
+      const returnUrl = localStorage.getItem('returnUrl') || 'index.html';
+      window.location.href = returnUrl;
+    });
+  });
+  
+  async function loadArticle(articleId) {
+    try {
+      const docRef = doc(db, 'articles', articleId);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        const article = docSnap.data();
+        renderArticle(article);
+      } else {
+        document.getElementById('article-content').innerHTML = `
+          <div class="error-message">
+            <h2>Article Not Found</h2>
+            <p>The requested article could not be found.</p>
+            <a href="index.html">Return to Home</a>
+          </div>
+        `;
+      }
+    } catch (error) {
+      console.error('Error loading article:', error);
+      document.getElementById('article-content').innerHTML = `
+        <div class="error-message">
+          <h2>Error Loading Article</h2>
+          <p>There was a problem loading the article. Please try again later.</p>
+          <a href="index.html">Return to Home</a>
+        </div>
+      `;
+    }
+  }
+  
+  function renderArticle(article) {
+    const articleContent = document.getElementById('article-content');
+    
+    // Format date
+    const date = article.timestamp ? new Date(article.timestamp).toLocaleDateString() : 'Unknown date';
+    
+    articleContent.innerHTML = `
+      <h1 class="article-title">${article.title || 'Untitled Article'}</h1>
+      <div class="article-meta">
+        <span>Published: ${date}</span>
+      </div>
+      ${article.image ? `<img src="${article.image}" alt="${article.title}" class="article-image">` : ''}
+      <div class="article-content">
+        ${article.description || '<p>No content available.</p>'}
+      </div>
+    `;
+  }
+  
+  // Save the page we came from when leaving this page
+  window.addEventListener('beforeunload', function() {
+    localStorage.setItem('returnUrl', document.referrer || 'index.html');
+  });
+</script>
+
+</body>
+</html>
