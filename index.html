@@ -1,1 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HERO Sports</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script type="module">
+  // Check if mobile and redirect
+  if (window.innerWidth <= 768) {
+    window.location.href = 'index2.html';
+  }
+</script>
+<style>
+  body {
+    margin:0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #FDFDFD;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    display:flex;
+    align-items:center;
+    padding:10px 20px;
+    font-family: 'Oswald', sans-serif;
+    font-weight:700;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  header img {
+    height:50px;
+    margin-right:10px;
+  }
+  .welcome-box {
+    text-align:center;
+    padding:50px 20px;
+    font-size:1.5rem;
+    background: linear-gradient(to right, #f8f8f8, #fff, #f8f8f8);
+  }
+  .social-icons {
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin-top:20px;
+  }
+  .social-icons a {
+    display:inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    color:#000;
+    text-decoration:none;
+    font-size:1.5rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+  .social-icons a:hover {
+    background-color: #000;
+    color: #fff;
+    transform: translateY(-3px);
+  }
+  
+  /* Navigation improvements */
+  .nav-container {
+    position: relative;
+    margin: 20px 0;
+  }
+  
+  .nav-separator {
+    height: 1px;
+    background-color: #ddd;
+    margin: 0 5%;
+  }
+  
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    background: #fff;
+    padding: 15px 0;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: #000;
+    padding: 12px 25px;
+    display: inline-block;
+    position: relative;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    border: 1px solid #eee;
+  }
+  
+  nav a:hover {
+    background: #f5f5f5;
+  }
+  
+  nav a.active {
+    color: #000;
+    font-weight: bold;
+  }
+  
+  nav a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: #000;
+  }
+  
+  /* Content area */
+  .content {
+    flex: 1;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* News section layout */
+  .news-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .news-left, .news-right {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .news-center {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Article card */
+  .article-card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .article-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .article-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .article-content {
+    padding: 15px;
+  }
+  
+  .article-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+    margin: 0 0 10px;
+  }
+  
+  .article-desc {
+    color: #555;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Video card */
+  .video-card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .video-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .video-thumbnail {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    background-color: #000;
+  }
+  
+  .video-thumbnail iframe,
+  .video-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  
+  .video-play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 3rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+  
+  .video-card:hover .video-play-icon {
+    opacity: 1;
+  }
+  
+  .video-title {
+    padding: 15px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    text-align: center;
+    margin: 0;
+  }
+  
+  .video-title::before, .video-title::after {
+    content: '"';
+  }
+  
+  /* Videos section layout */
+  .videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  /* Articles section layout */
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  /* Video popup */
+  .video-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .video-popup-content {
+    position: relative;
+    width: 80%;
+    max-width: 800px;
+    background: #000;
+  }
+  
+  .video-popup-close {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .video-popup-iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+  }
+  
+  /* Section titles */
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.8rem;
+    margin: 30px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #000;
+  }
+  
+  /* Footer */
+  footer {
+    background-color: #000;
+    color: #fff;
+    padding: 30px 20px;
+    margin-top: auto;
+  }
+  
+  .footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .footer-section {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 20px;
+  }
+  
+  .footer-section h3 {
+    font-family: 'Oswald', sans-serif;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+  }
+  
+  .footer-links a {
+    display: block;
+    color: #ddd;
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: color 0.3s;
+  }
+  
+  .footer-links a:hover {
+    color: #fff;
+  }
+  
+  .footer-social a {
+    display: inline-block;
+    color: #fff;
+    background-color: #333;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 36px;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .footer-social a:hover {
+    background-color: #555;
+  }
+  
+  .admin-link {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 15px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .admin-link:hover {
+    background-color: #555;
+  }
+  
+  .copyright {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #444;
+    color: #999;
+    font-size: 0.9rem;
+  }
+  
+  .author-link {
+    color: #fff;
+    text-decoration: underline;
+    margin-left: 5px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 1024px) {
+    .news-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .news-left, .news-right {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    nav {
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    nav a {
+      width: 80%;
+      text-align: center;
+    }
+    
+    .news-left, .news-right {
+      grid-template-columns: 1fr;
+    }
+    
+    .footer-section {
+      min-width: 100%;
+    }
+    
+    .welcome-box {
+      font-size: 1.2rem;
+      padding: 30px 15px;
+    }
+    
+    .videos-grid, .articles-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
 
+<header>
+  <img src="https://i.ibb.co/65R703b/SPORTS-removebg-preview.png" alt="Logo">
+  HERO Sports
+</header>
+
+<div class="welcome-box">
+  WELCOME TO YOUR NEXT GENERATION OF SPORTS NEWS
+  <div class="social-icons">
+    <a href="https://www.youtube.com/channel/UCvRf1s74zBL1Nptge-mZAug" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://www.youtube.com/@btemOfficial" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://www.instagram.com/he_r_o24/" target="_blank"><i class="fab fa-instagram"></i></a>
+    <a href="https://www.tiktok.com/@hero_sports_allnews" target="_blank"><i class="fab fa-tiktok"></i></a>
+  </div>
+</div>
+
+<div class="nav-container">
+  <div class="nav-separator"></div>
+  <nav>
+    <a href="#news" class="active" data-tab="news">News</a>
+    <a href="#videos" data-tab="videos">Videos</a>
+    <a href="#articles" data-tab="articles">Articles</a>
+  </nav>
+</div>
+
+<div class="content">
+  <!-- News Section -->
+  <div id="news-section">
+    <h2 class="section-title">Latest News</h2>
+    <div class="news-grid">
+      <div class="news-left" id="news-left-column">
+        <!-- Articles will be loaded here -->
+      </div>
+      <div class="news-center" id="news-center-column">
+        <!-- Videos will be loaded here -->
+      </div>
+      <div class="news-right" id="news-right-column">
+        <!-- Articles will be loaded here -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Videos Section (initially hidden) -->
+  <div id="videos-section" style="display: none;">
+    <h2 class="section-title">Videos</h2>
+    <div class="videos-grid" id="videos-container">
+      <!-- Videos will be loaded here -->
+    </div>
+  </div>
+  
+  <!-- Articles Section (initially hidden) -->
+  <div id="articles-section" style="display: none;">
+    <h2 class="section-title">Articles</h2>
+    <div class="articles-grid" id="articles-container">
+      <!-- Articles will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<!-- Video Popup -->
+<div class="video-popup" id="video-popup">
+  <div class="video-popup-content">
+    <span class="video-popup-close" id="video-popup-close"><i class="fas fa-times"></i></span>
+    <div class="video-popup-iframe" id="video-popup-iframe"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Navigation</h3>
+      <div class="footer-links">
+        <a href="#news" data-tab="news">News</a>
+        <a href="#videos" data-tab="videos">Videos</a>
+        <a href="#articles" data-tab="articles">Articles</a>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h3>Follow Us</h3>
+      <div class="footer-social">
+        <a href="https://www.youtube.com/channel/UCvRf1s74zBL1Nptge-mZAug" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.youtube.com/@btemOfficial" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.instagram.com/he_r_o24/" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@hero_sports_allnews" target="_blank"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h3>Admin</h3>
+      <p>Site administration</p>
+      <a href="pass.html" class="admin-link">ADMIN LOGIN</a>
+    </div>
+  </div>
+  
+  <div class="copyright">
+    &copy; 2023 HERO Sports. All rights reserved.
+    <a href="https://mkbertrand.vercel.app/" class="author-link" target="_blank">Made by M. K. Bertrand</a>
+  </div>
+</footer>
+
+<!-- Firebase Scripts -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
+    authDomain: "muah-feed.firebaseapp.com",
+    databaseURL: "https://muah-feed-default-rtdb.firebaseio.com",
+    projectId: "muah-feed",
+    storageBucket: "muah-feed.firebasestorage.app",
+    messagingSenderId: "442314397706",
+    appId: "1:442314397706:web:65210aa85f2c43053667f3",
+    measurementId: "G-RD4CWTL6KG"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  
+  // Navigation active state management
+  document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('nav a');
+    const footerLinks = document.querySelectorAll('.footer-links a');
+    const sections = {
+      news: document.getElementById('news-section'),
+      videos: document.getElementById('videos-section'),
+      articles: document.getElementById('articles-section')
+    };
+    
+    // Function to switch tabs
+    function switchTab(tabName) {
+      // Hide all sections
+      Object.values(sections).forEach(section => {
+        section.style.display = 'none';
+      });
+      
+      // Show selected section
+      sections[tabName].style.display = 'block';
+      
+      // Update active class on nav links
+      navLinks.forEach(link => {
+        if (link.getAttribute('data-tab') === tabName) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+      
+      // Save active tab to localStorage
+      localStorage.setItem('activeTab', tabName);
+    }
+    
+    // Add click event to nav links
+    navLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const tabName = this.getAttribute('data-tab');
+        switchTab(tabName);
+      });
+    });
+    
+    // Add click event to footer links
+    footerLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const tabName = this.getAttribute('data-tab');
+        switchTab(tabName);
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+    
+    // Check if there's a saved active tab
+    const savedTab = localStorage.getItem('activeTab');
+    if (savedTab && sections[savedTab]) {
+      switchTab(savedTab);
+    }
+    
+    // Load data from Firestore
+    loadContent();
+  });
+  
+  // Function to extract YouTube ID from URL
+  function getYouTubeId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+  
+  // Function to load content from Firestore
+  async function loadContent() {
+    try {
+      // Load articles
+      const articlesQuery = query(collection(db, 'articles'), orderBy('timestamp', 'desc'));
+      const articlesSnapshot = await getDocs(articlesQuery);
+      const articles = articlesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Load videos
+      const videosQuery = query(collection(db, 'videos'), orderBy('timestamp', 'desc'));
+      const videosSnapshot = await getDocs(videosQuery);
+      const videos = videosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Render content
+      renderNews(articles, videos);
+      renderVideos(videos);
+      renderArticles(articles);
+      
+      // Set up likes system
+      setupLikesSystem();
+    } catch (error) {
+      console.error('Error loading content:', error);
+    }
+  }
+  
+  // Function to render news section (mix of articles and videos)
+  function renderNews(articles, videos) {
+    const newsLeft = document.getElementById('news-left-column');
+    const newsCenter = document.getElementById('news-center-column');
+    const newsRight = document.getElementById('news-right-column');
+    
+    // Clear existing content
+    newsLeft.innerHTML = '';
+    newsCenter.innerHTML = '';
+    newsRight.innerHTML = '';
+    
+    // Distribute articles to left and right columns
+    articles.forEach((article, index) => {
+      const articleElement = createArticleElement(article);
+      
+      if (index % 2 === 0) {
+        newsLeft.appendChild(articleElement);
+      } else {
+        newsRight.appendChild(articleElement);
+      }
+    });
+    
+    // Add videos to center column
+    videos.forEach(video => {
+      const videoElement = createVideoElement(video);
+      newsCenter.appendChild(videoElement);
+    });
+  }
+  
+  // Function to render videos section
+  function renderVideos(videos) {
+    const videosContainer = document.getElementById('videos-container');
+    videosContainer.innerHTML = '';
+    
+    videos.forEach(video => {
+      const videoElement = createVideoElement(video);
+      videosContainer.appendChild(videoElement);
+    });
+  }
+  
+  // Function to render articles section
+  function renderArticles(articles) {
+    const articlesContainer = document.getElementById('articles-container');
+    articlesContainer.innerHTML = '';
+    
+    articles.forEach(article => {
+      const articleElement = createArticleElement(article);
+      articlesContainer.appendChild(articleElement);
+    });
+  }
+  
+  // Function to create article element
+  function createArticleElement(article) {
+    const articleDiv = document.createElement('div');
+    articleDiv.className = 'article-card';
+    articleDiv.setAttribute('data-id', article.id);
+    
+    articleDiv.innerHTML = `
+      <img src="${article.image}" alt="${article.title}" class="article-image">
+      <div class="article-content">
+        <h3 class="article-title">${article.title}</h3>
+        <div class="article-desc">${article.description}</div>
+      </div>
+      <div class="article-likes">
+        <button class="like-btn" data-id="${article.id}">
+          <i class="far fa-heart"></i> <span class="like-count">0</span>
+        </button>
+      </div>
+    `;
+    
+    // Add click event to open article in view.html
+    articleDiv.addEventListener('click', () => {
+      window.location.href = `view.html?id=${article.id}`;
+    });
+    
+    return articleDiv;
+  }
+  
+  // Function to create video element
+  function createVideoElement(video) {
+    const videoDiv = document.createElement('div');
+    videoDiv.className = 'video-card';
+    videoDiv.setAttribute('data-id', video.id);
+    
+    const videoId = getYouTubeId(video.link);
+    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    
+    videoDiv.innerHTML = `
+      <div class="video-thumbnail">
+        <img src="${thumbnailUrl}" alt="${video.title}">
+        <div class="video-play-icon"><i class="fas fa-play-circle"></i></div>
+      </div>
+      <h3 class="video-title">${video.title}</h3>
+      <div class="video-likes">
+        <button class="like-btn" data-id="${video.id}">
+          <i class="far fa-heart"></i> <span class="like-count">0</span>
+        </button>
+      </div>
+    `;
+    
+    // Add click event to open video popup
+    videoDiv.addEventListener('click', () => {
+      openVideoPopup(video.link);
+    });
+    
+    return videoDiv;
+  }
+  
+  // Function to open video popup
+  function openVideoPopup(videoUrl) {
+    const videoPopup = document.getElementById('video-popup');
+    const videoPopupIframe = document.getElementById('video-popup-iframe');
+    const videoId = getYouTubeId(videoUrl);
+    
+    videoPopupIframe.innerHTML = `
+      <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+      </iframe>
+    `;
+    
+    videoPopup.style.display = 'flex';
+    
+    // Add event to close popup when clicking close button
+    document.getElementById('video-popup-close').addEventListener('click', () => {
+      videoPopup.style.display = 'none';
+      videoPopupIframe.innerHTML = '';
+    });
+    
+    // Add event to close popup when clicking outside
+    videoPopup.addEventListener('click', (e) => {
+      if (e.target === videoPopup) {
+        videoPopup.style.display = 'none';
+        videoPopupIframe.innerHTML = '';
+      }
+    });
+  }
+  
+  // Function to set up likes system using localStorage
+  function setupLikesSystem() {
+    // Initialize likes object if not exists
+    if (!localStorage.getItem('contentLikes')) {
+      localStorage.setItem('contentLikes', JSON.stringify({}));
+    }
+    
+    const likes = JSON.parse(localStorage.getItem('contentLikes'));
+    
+    // Update like buttons
+    document.querySelectorAll('.like-btn').forEach(btn => {
+      const contentId = btn.getAttribute('data-id');
+      const likeCount = likes[contentId] || 0;
+      
+      btn.querySelector('.like-count').textContent = likeCount;
+      
+      // Check if user has liked this content
+      if (localStorage.getItem(`liked_${contentId}`)) {
+        btn.querySelector('i').className = 'fas fa-heart';
+        btn.disabled = true;
+      }
+      
+      // Add click event to like button
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent triggering parent click events
+        
+        if (!localStorage.getItem(`liked_${contentId}`)) {
+          // Update like count
+          likes[contentId] = (likes[contentId] || 0) + 1;
+          localStorage.setItem('contentLikes', JSON.stringify(likes));
+          
+          // Update button
+          btn.querySelector('.like-count').textContent = likes[contentId];
+          btn.querySelector('i').className = 'fas fa-heart';
+          btn.disabled = true;
+          
+          // Mark as liked by user
+          localStorage.setItem(`liked_${contentId}`, 'true');
+        }
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
