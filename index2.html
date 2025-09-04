@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HERO Sports Mobile</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script type="module">
+  // Check if desktop and redirect
+  if (window.innerWidth > 768) {
+    window.location.href = 'index.html';
+  }
+</script>
+<style>
+  :root {
+    --primary-color: #000;
+    --secondary-color: #FDFDFD;
+    --accent-color: #E53935;
+    --text-color: #333;
+    --light-gray: #f5f5f5;
+    --border-color: #ddd;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    line-height: 1.5;
+  }
+  
+  /* Header */
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: #fff;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .mobile-header img {
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .mobile-header h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  
+  /* Welcome section */
+  .mobile-welcome {
+    text-align: center;
+    padding: 20px 15px;
+    background: var(--light-gray);
+    font-size: 1.1rem;
+  }
+  
+  .mobile-social {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 15px;
+  }
+  
+  .mobile-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 1.3rem;
+    transition: all 0.3s ease;
+  }
+  
+  .mobile-social a:hover {
+    color: var(--accent-color);
+  }
+  
+  /* Mobile navigation */
+  .mobile-nav {
+    display: flex;
+    justify-content: space-around;
+    background: #fff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 0;
+    position: sticky;
+    top: 64px;
+    z-index: 99;
+  }
+  
+  .mobile-nav a {
+    text-decoration: none;
+    color: var(--text-color);
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .mobile-nav a.active {
+    color: var(--accent-color);
+  }
+  
+  .mobile-nav i {
+    font-size: 1.1rem;
+  }
+  
+  /* Content sections */
+  .content-section {
+    display: none;
+    padding: 15px;
+  }
+  
+  .content-section.active {
+    display: block;
+  }
+  
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.3rem;
+    margin: 0 0 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary-color);
+  }
+  
+  /* Article card */
+  .mobile-article {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+  
+  .mobile-article-image {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+  }
+  
+  .mobile-article-content {
+    padding: 12px;
+  }
+  
+  .mobile-article-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    margin: 0 0 8px;
+  }
+  
+  .mobile-article-desc {
+    color: #555;
+    font-size: 0.85rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  
+  .mobile-article-likes {
+    display: flex;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  /* Video card */
+  .mobile-video {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    overflow: hidden;
+  }
+  
+  .mobile-video-thumbnail {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    background-color: #000;
+  }
+  
+  .mobile-video-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .mobile-video-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 2.2rem;
+    opacity: 0.8;
+  }
+  
+  .mobile-video-content {
+    padding: 12px;
+  }
+  
+  .mobile-video-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    margin: 0 0 8px;
+  }
+  
+  .mobile-video-title blockquote {
+    margin: 0;
+    padding: 0;
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+  
+  .mobile-video-likes {
+    display: flex;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid var(--border-color);
+  }
+  
+  /* Like button */
+  .mobile-like-btn {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.85rem;
+    color: #666;
+    cursor: pointer;
+  }
+  
+  .mobile-like-btn .fas {
+    color: var(--accent-color);
+  }
+  
+  .mobile-like-btn:disabled {
+    cursor: default;
+  }
+  
+  /* Video popup */
+  .mobile-video-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .mobile-video-popup-content {
+    position: relative;
+    width: 95%;
+    background: #000;
+  }
+  
+  .mobile-video-popup-close {
+    position: absolute;
+    top: -35px;
+    right: 0;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .mobile-video-popup-iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+  }
+  
+  .mobile-video-popup-iframe iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  
+  /* Footer */
+  .mobile-footer {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 20px 15px;
+    margin-top: 20px;
+  }
+  
+  .mobile-footer-section {
+    margin-bottom: 20px;
+  }
+  
+  .mobile-footer-section h3 {
+    font-family: 'Oswald', sans-serif;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+  }
+  
+  .mobile-footer-links a {
+    display: block;
+    color: #ddd;
+    text-decoration: none;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+  
+  .mobile-footer-social {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .mobile-footer-social a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50%;
+    font-size: 1rem;
+  }
+  
+  .mobile-admin-link {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 12px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  
+  .mobile-copyright {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #444;
+    color: #999;
+    font-size: 0.8rem;
+  }
+  
+  .mobile-author-link {
+    color: #fff;
+    text-decoration: underline;
+  }
+  
+  /* Loading spinner */
+  .mobile-loading {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .mobile-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-left-color: var(--accent-color);
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Swipe navigation hints */
+  .swipe-hint {
+    text-align: center;
+    padding: 10px;
+    color: #666;
+    font-size: 0.8rem;
+    display: none;
+  }
+  
+  @media (max-width: 480px) {
+    .mobile-header h1 {
+      font-size: 1.2rem;
+    }
+    
+    .mobile-welcome {
+      font-size: 1rem;
+      padding: 15px;
+    }
+    
+    .section-title {
+      font-size: 1.2rem;
+    }
+    
+    .mobile-article-image {
+      height: 140px;
+    }
+    
+    .swipe-hint {
+      display: block;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .mobile-nav a {
+      font-size: 0.8rem;
+      padding: 6px 8px;
+    }
+    
+    .mobile-nav i {
+      font-size: 1rem;
+    }
+    
+    .mobile-article-image {
+      height: 120px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Mobile Header -->
+<header class="mobile-header">
+  <img src="https://i.ibb.co/65R703b/SPORTS-removebg-preview.png" alt="Logo">
+  <h1>HERO Sports</h1>
+</header>
+
+<!-- Welcome Section -->
+<div class="mobile-welcome">
+  WELCOME TO YOUR NEXT GENERATION OF SPORTS NEWS
+  <div class="mobile-social">
+    <a href="https://www.youtube.com/channel/UCvRf1s74zBL1Nptge-mZAug" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://www.youtube.com/@btemOfficial" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://www.instagram.com/he_r_o24/" target="_blank"><i class="fab fa-instagram"></i></a>
+    <a href="https://www.tiktok.com/@hero_sports_allnews" target="_blank"><i class="fab fa-tiktok"></i></a>
+  </div>
+</div>
+
+<!-- Mobile Navigation -->
+<nav class="mobile-nav">
+  <a href="#news" class="active" data-tab="news">
+    <i class="fas fa-newspaper"></i>
+    <span>News</span>
+  </a>
+  <a href="#videos" data-tab="videos">
+    <i class="fas fa-play-circle"></i>
+    <span>Videos</span>
+  </a>
+  <a href="#articles" data-tab="articles">
+    <i class="fas fa-file-alt"></i>
+    <span>Articles</span>
+  </a>
+  <a href="search.html">
+    <i class="fas fa-search"></i>
+    <span>Search</span>
+  </a>
+</nav>
+
+<!-- Swipe hint for mobile users -->
+<div class="swipe-hint">
+  <i class="fas fa-arrows-alt-h"></i> Swipe left/right to navigate
+</div>
+
+<!-- News Section -->
+<section id="news-section" class="content-section active">
+  <h2 class="section-title">Latest News</h2>
+  <div id="mobile-news-container">
+    <div class="mobile-loading">
+      <div class="mobile-spinner"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Videos Section -->
+<section id="videos-section" class="content-section">
+  <h2 class="section-title">Videos</h2>
+  <div id="mobile-videos-container">
+    <div class="mobile-loading">
+      <div class="mobile-spinner"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Articles Section -->
+<section id="articles-section" class="content-section">
+  <h2 class="section-title">Articles</h2>
+  <div id="mobile-articles-container">
+    <div class="mobile-loading">
+      <div class="mobile-spinner"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Video Popup -->
+<div class="mobile-video-popup" id="mobile-video-popup">
+  <div class="mobile-video-popup-content">
+    <span class="mobile-video-popup-close" id="mobile-video-popup-close">
+      <i class="fas fa-times"></i>
+    </span>
+    <div class="mobile-video-popup-iframe" id="mobile-video-popup-iframe"></div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="mobile-footer">
+  <div class="mobile-footer-section">
+    <h3>Navigation</h3>
+    <div class="mobile-footer-links">
+      <a href="#news" data-tab="news">News</a>
+      <a href="#videos" data-tab="videos">Videos</a>
+      <a href="#articles" data-tab="articles">Articles</a>
+      <a href="search.html">Search</a>
+    </div>
+  </div>
+  
+  <div class="mobile-footer-section">
+    <h3>Follow Us</h3>
+    <div class="mobile-footer-social">
+      <a href="https://www.youtube.com/channel/UCvRf1s74zBL1Nptge-mZAug" target="_blank"><i class="fab fa-youtube"></i></a>
+      <a href="https://www.youtube.com/@btemOfficial" target="_blank"><i class="fab fa-youtube"></i></a>
+      <a href="https://www.instagram.com/he_r_o24/" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.tiktok.com/@hero_sports_allnews" target="_blank"><i class="fab fa-tiktok"></i></a>
+    </div>
+  </div>
+  
+  <div class="mobile-footer-section">
+    <h3>Admin</h3>
+    <p>Site administration</p>
+    <a href="pass.html" class="mobile-admin-link">ADMIN LOGIN</a>
+  </div>
+  
+  <div class="mobile-copyright">
+    &copy; 2023 HERO Sports. All rights reserved.
+    <a href="https://mkbertrand.vercel.app/" class="mobile-author-link" target="_blank">Made by M. K. Bertrand</a>
+  </div>
+</footer>
+
+<!-- Firebase Scripts -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy, doc, updateDoc, increment, getDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
+    authDomain: "muah-feed.firebaseapp.com",
+    databaseURL: "https://muah-feed-default-rtdb.firebaseio.com",
+    projectId: "muah-feed",
+    storageBucket: "muah-feed.firebasestorage.app",
+    messagingSenderId: "442314397706",
+    appId: "1:442314397706:web:65210aa85f2c43053667f3",
+    measurementId: "G-RD4CWTL6KG"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  
+  // Navigation active state management
+  document.addEventListener('DOMContentLoaded', function() {
+    const navLinks = document.querySelectorAll('.mobile-nav a');
+    const footerLinks = document.querySelectorAll('.mobile-footer-links a');
+    const sections = {
+      news: document.getElementById('news-section'),
+      videos: document.getElementById('videos-section'),
+      articles: document.getElementById('articles-section')
+    };
+    
+    // Function to switch tabs
+    function switchTab(tabName) {
+      // Hide all sections
+      Object.values(sections).forEach(section => {
+        section.classList.remove('active');
+      });
+      
+      // Show selected section
+      sections[tabName].classList.add('active');
+      
+      // Update active class on nav links
+      navLinks.forEach(link => {
+        if (link.getAttribute('data-tab') === tabName) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+      
+      // Save active tab to localStorage
+      localStorage.setItem('mobileActiveTab', tabName);
+      
+      // Load content if not already loaded
+      if (document.getElementById(`mobile-${tabName}-container`).children.length === 1) {
+        loadContent();
+      }
+    }
+    
+    // Add click event to nav links
+    navLinks.forEach(link => {
+      if (link.hasAttribute('data-tab')) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const tabName = this.getAttribute('data-tab');
+          switchTab(tabName);
+        });
+      }
+    });
+    
+    // Add click event to footer links
+    footerLinks.forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const tabName = this.getAttribute('data-tab');
+        switchTab(tabName);
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+    
+    // Check if there's a saved active tab
+    const savedTab = localStorage.getItem('mobileActiveTab');
+    if (savedTab && sections[savedTab]) {
+      switchTab(savedTab);
+    }
+    
+    // Load data from Firestore
+    loadContent();
+    
+    // Add swipe functionality for mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    document.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, false);
+    
+    document.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, false);
+    
+    function handleSwipe() {
+      const swipeThreshold = 50;
+      
+      if (touchEndX < touchStartX - swipeThreshold) {
+        // Swipe left - go to next tab
+        const tabs = ['news', 'videos', 'articles'];
+        const currentTab = localStorage.getItem('mobileActiveTab') || 'news';
+        const currentIndex = tabs.indexOf(currentTab);
+        const nextIndex = (currentIndex + 1) % tabs.length;
+        switchTab(tabs[nextIndex]);
+      }
+      
+      if (touchEndX > touchStartX + swipeThreshold) {
+        // Swipe right - go to previous tab
+        const tabs = ['news', 'videos', 'articles'];
+        const currentTab = localStorage.getItem('mobileActiveTab') || 'news';
+        const currentIndex = tabs.indexOf(currentTab);
+        const prevIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+        switchTab(tabs[prevIndex]);
+      }
+    }
+  });
+  
+  // Function to extract YouTube ID from URL
+  function getYouTubeId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+  
+  // Function to load content from Firestore
+  async function loadContent() {
+    try {
+      // Load articles
+      const articlesQuery = query(collection(db, 'articles'), orderBy('timestamp', 'desc'));
+      const articlesSnapshot = await getDocs(articlesQuery);
+      const articles = articlesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Load videos
+      const videosQuery = query(collection(db, 'videos'), orderBy('timestamp', 'desc'));
+      const videosSnapshot = await getDocs(videosQuery);
+      const videos = videosSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      // Render content
+      renderNews(articles, videos);
+      renderVideos(videos);
+      renderArticles(articles);
+      
+      // Set up likes system
+      setupLikesSystem();
+    } catch (error) {
+      console.error('Error loading content:', error);
+    }
+  }
+  
+  // Function to render news section (mix of articles and videos)
+  function renderNews(articles, videos) {
+    const newsContainer = document.getElementById('mobile-news-container');
+    newsContainer.innerHTML = '';
+    
+    // Add first video at the top
+    if (videos.length > 0) {
+      const videoElement = createVideoElement(videos[0], true);
+      newsContainer.appendChild(videoElement);
+    }
+    
+    // Add articles
+    articles.slice(0, 5).forEach(article => {
+      const articleElement = createArticleElement(article, true);
+      newsContainer.appendChild(articleElement);
+    });
+    
+    // Add more videos if available
+    if (videos.length > 1) {
+      videos.slice(1, 3).forEach(video => {
+        const videoElement = createVideoElement(video, true);
+        newsContainer.appendChild(videoElement);
+      });
+    }
+  }
+  
+  // Function to render videos section
+  function renderVideos(videos) {
+    const videosContainer = document.getElementById('mobile-videos-container');
+    videosContainer.innerHTML = '';
+    
+    videos.forEach(video => {
+      const videoElement = createVideoElement(video, false);
+      videosContainer.appendChild(videoElement);
+    });
+  }
+  
+  // Function to render articles section
+  function renderArticles(articles) {
+    const articlesContainer = document.getElementById('mobile-articles-container');
+    articlesContainer.innerHTML = '';
+    
+    articles.forEach(article => {
+      const articleElement = createArticleElement(article, false);
+      articlesContainer.appendChild(articleElement);
+    });
+  }
+  
+  // Function to create article element
+  function createArticleElement(article, isNewsSection) {
+    const articleDiv = document.createElement('div');
+    articleDiv.className = 'mobile-article';
+    articleDiv.setAttribute('data-id', article.id);
+    articleDiv.setAttribute('data-type', 'article');
+    
+    const description = isNewsSection ? 
+      (article.description.length > 100 ? article.description.substring(0, 100) + '...' : article.description) :
+      article.description;
+    
+    articleDiv.innerHTML = `
+      <img src="${article.image}" alt="${article.title}" class="mobile-article-image">
+      <div class="mobile-article-content">
+        <h3 class="mobile-article-title">${article.title}</h3>
+        <div class="mobile-article-desc">${description}</div>
+        <div class="mobile-article-likes">
+          <button class="mobile-like-btn" data-id="${article.id}" data-type="article">
+            <i class="far fa-heart"></i> <span class="mobile-like-count">${article.likes || 0}</span>
+          </button>
+        </div>
+      </div>
+    `;
+    
+    // Add click event to open article in view.html
+    articleDiv.addEventListener('click', (e) => {
+      if (!e.target.closest('.mobile-like-btn')) {
+        window.location.href = `view.html?id=${article.id}`;
+      }
+    });
+    
+    return articleDiv;
+  }
+  
+  // Function to create video element
+  function createVideoElement(video, isNewsSection) {
+    const videoDiv = document.createElement('div');
+    videoDiv.className = 'mobile-video';
+    videoDiv.setAttribute('data-id', video.id);
+    videoDiv.setAttribute('data-type', 'video');
+    
+    const videoId = getYouTubeId(video.link);
+    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    
+    const title = isNewsSection ? 
+      (video.title.length > 60 ? video.title.substring(0, 60) + '...' : video.title) :
+      video.title;
+    
+    videoDiv.innerHTML = `
+      <div class="mobile-video-thumbnail">
+        <img src="${thumbnailUrl}" alt="${video.title}">
+        <div class="mobile-video-play"><i class="fas fa-play-circle"></i></div>
+      </div>
+      <div class="mobile-video-content">
+        <h3 class="mobile-video-title"><blockquote>${title}</blockquote></h3>
+        <div class="mobile-video-likes">
+          <button class="mobile-like-btn" data-id="${video.id}" data-type="video">
+            <i class="far fa-heart"></i> <span class="mobile-like-count">${video.likes || 0}</span>
+          </button>
+        </div>
+      </div>
+    `;
+    
+    // Add click event to open video popup
+    videoDiv.addEventListener('click', (e) => {
+      if (!e.target.closest('.mobile-like-btn')) {
+        openVideoPopup(video.link);
+      }
+    });
+    
+    return videoDiv;
+  }
+  
+  // Function to open video popup
+  function openVideoPopup(videoUrl) {
+    const videoPopup = document.getElementById('mobile-video-popup');
+    const videoPopupIframe = document.getElementById('mobile-video-popup-iframe');
+    const videoId = getYouTubeId(videoUrl);
+    
+    videoPopupIframe.innerHTML = `
+      <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+      </iframe>
+    `;
+    
+    videoPopup.style.display = 'flex';
+    
+    // Add event to close popup when clicking close button
+    document.getElementById('mobile-video-popup-close').addEventListener('click', () => {
+      videoPopup.style.display = 'none';
+      videoPopupIframe.innerHTML = '';
+    });
+    
+    // Add event to close popup when clicking outside
+    videoPopup.addEventListener('click', (e) => {
+      if (e.target === videoPopup) {
+        videoPopup.style.display = 'none';
+        videoPopupIframe.innerHTML = '';
+      }
+    });
+  }
+  
+  // Function to set up likes system using Firestore
+  function setupLikesSystem() {
+    document.querySelectorAll('.mobile-like-btn').forEach(btn => {
+      const contentId = btn.getAttribute('data-id');
+      const contentType = btn.getAttribute('data-type');
+      
+      // Check if user has liked this content
+      if (localStorage.getItem(`mobileLiked_${contentType}_${contentId}`)) {
+        btn.querySelector('i').className = 'fas fa-heart';
+        btn.disabled = true;
+      }
+      
+      // Add click event to like button
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation(); // Prevent triggering parent click events
+        
+        if (!localStorage.getItem(`mobileLiked_${contentType}_${contentId}`)) {
+          try {
+            // Update like count in Firestore
+            const docRef = doc(db, `${contentType}s`, contentId);
+            await updateDoc(docRef, {
+              likes: increment(1)
+            });
+            
+            // Get updated like count
+            const updatedDoc = await getDoc(docRef);
+            const updatedLikes = updatedDoc.data().likes || 0;
+            
+            // Update button
+            btn.querySelector('.mobile-like-count').textContent = updatedLikes;
+            btn.querySelector('i').className = 'fas fa-heart';
+            btn.disabled = true;
+            
+            // Mark as liked by user
+            localStorage.setItem(`mobileLiked_${contentType}_${contentId}`, 'true');
+          } catch (error) {
+            console.error('Error updating like:', error);
+          }
+        }
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
