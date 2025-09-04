@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search - HERO Sports</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  body {
+    margin:0;
+    font-family: 'Roboto', sans-serif;
+    background-color: #FDFDFD;
+    color: #000;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  header {
+    display:flex;
+    align-items:center;
+    padding:10px 20px;
+    font-family: 'Oswald', sans-serif;
+    font-weight:700;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header img {
+    height:50px;
+    margin-right:10px;
+  }
+  .home-btn {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  /* Search section */
+  .search-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+    width: 100%;
+  }
+  
+  .search-box {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 15px 50px 15px 15px;
+    font-size: 1.1rem;
+    border: 2px solid #ddd;
+    border-radius: 30px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  
+  .search-input:focus {
+    border-color: #000;
+  }
+  
+  .search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.2rem;
+    color: #666;
+    cursor: pointer;
+  }
+  
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .suggestion {
+    background: #f0f0f0;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .suggestion:hover {
+    background: #ddd;
+  }
+  
+  .separator {
+    height: 1px;
+    background-color: #ddd;
+    margin: 20px 0;
+  }
+  
+  /* Results section */
+  .results-info {
+    margin-bottom: 20px;
+    color: #666;
+  }
+  
+  .results-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .result-item {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+  
+  .result-item:hover {
+    transform: translateY(-3px);
+  }
+  
+  .article-result {
+    cursor: pointer;
+  }
+  
+  .article-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .article-content {
+    padding: 15px;
+  }
+  
+  .article-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.2rem;
+    margin: 0 0 10px;
+  }
+  
+  .article-desc {
+    color: #555;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .video-result {
+    cursor: pointer;
+  }
+  
+  .video-thumbnail {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+    background-color: #000;
+  }
+  
+  .video-thumbnail iframe,
+  .video-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  
+  .video-play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 2.5rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+  }
+  
+  .video-result:hover .video-play-icon {
+    opacity: 1;
+  }
+  
+  .video-title {
+    padding: 15px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 1.1rem;
+    text-align: center;
+    margin: 0;
+  }
+  
+  .video-title::before, .video-title::after {
+    content: '"';
+  }
+  
+  /* Video popup */
+  .video-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .video-popup-content {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    background: #000;
+  }
+  
+  .video-popup-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  
+  .video-popup-iframe {
+    width: 100%;
+    aspect-ratio: 16/9;
+  }
+  
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+  }
+  
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.2rem;
+  }
+  
+  /* Error */
+  .error {
+    text-align: center;
+    padding: 40px;
+    color: #ff2d55;
+  }
+  
+  /* Footer */
+  footer {
+    background-color: #000;
+    color: #fff;
+    padding: 30px 20px;
+    margin-top: auto;
+  }
+  
+  .footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .footer-section {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 20px;
+  }
+  
+  .footer-section h3 {
+    font-family: 'Oswald', sans-serif;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+  }
+  
+  .footer-links a {
+    display: block;
+    color: #ddd;
+    text-decoration: none;
+    margin-bottom: 8px;
+    transition: color 0.3s;
+  }
+  
+  .footer-links a:hover {
+    color: #fff;
+  }
+  
+  .footer-social a {
+    display: inline-block;
+    color: #fff;
+    background-color: #333;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 36px;
+    margin-right: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .footer-social a:hover {
+    background-color: #555;
+  }
+  
+  .admin-link {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 8px 15px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .admin-link:hover {
+    background-color: #555;
+  }
+  
+  .copyright {
+    text-align: center;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #444;
+    color: #999;
+    font-size: 0.9rem;
+  }
+  
+  .author-link {
+    color: #fff;
+    text-decoration: underline;
+    margin-left: 5px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .search-container {
+      padding: 0 15px;
+    }
+    
+    .search-input {
+      padding: 12px 45px 12px 12px;
+      font-size: 1rem;
+    }
+    
+    .footer-section {
+      min-width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://i.ibb.co/65R703b/SPORTS-removebg-preview.png" alt="Logo">
+  <span>HERO Sports Search</span>
+  <button class="home-btn" id="homeButton">
+    <i class="fas fa-home"></i> Home
+  </button>
+</header>
+
+<div class="search-container">
+  <div class="search-box">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search for players, teams, leagues...">
+    <div class="search-icon" id="searchButton">
+      <i class="fas fa-search"></i>
+    </div>
+  </div>
+  
+  <div class="suggestions" id="suggestions">
+    <!-- Suggestions will be populated by JavaScript -->
+  </div>
+  
+  <div class="separator"></div>
+  
+  <div class="results-info" id="resultsInfo">
+    Enter a search term to find content
+  </div>
+  
+  <div class="results-container" id="resultsContainer">
+    <!-- Results will be populated by JavaScript -->
+  </div>
+</div>
+
+<!-- Video Popup -->
+<div class="video-popup" id="video-popup">
+  <div class="video-popup-content">
+    <span class="video-popup-close" id="video-popup-close"><i class="fas fa-times"></i></span>
+    <div class="video-popup-iframe" id="video-popup-iframe"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>Navigation</h3>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#news">News</a>
+        <a href="index.html#videos">Videos</a>
+        <a href="index.html#articles">Articles</a>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h3>Follow Us</h3>
+      <div class="footer-social">
+        <a href="https://www.youtube.com/channel/UCvRf1s74zBL1Nptge-mZAug" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.youtube.com/@btemOfficial" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="https://www.instagram.com/he_r_o24/" target="_blank"><i class="fab fa-instagram"></i></a>
+        <a href="https://www.tiktok.com/@hero_sports_allnews" target="_blank"><i class="fab fa-tiktok"></i></a>
+      </div>
+    </div>
+    
+    <div class="footer-section">
+      <h3>Admin</h3>
+      <p>Site administration</p>
+      <a href="pass.html" class="admin-link">ADMIN LOGIN</a>
+    </div>
+  </div>
+  
+  <div class="copyright">
+    &copy; 2023 HERO Sports. All rights reserved.
+    <a href="https://mkbertrand.vercel.app/" class="author-link" target="_blank">Made by M. K. Bertrand</a>
+  </div>
+</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyCW2RJIku0JLJZTUu0YA9yKO8zjtX29fAo",
+    authDomain: "muah-feed.firebaseapp.com",
+    databaseURL: "https://muah-feed-default-rtdb.firebaseio.com",
+    projectId: "muah-feed",
+    storageBucket: "muah-feed.firebasestorage.app",
+    messagingSenderId: "442314397706",
+    appId: "1:442314397706:web:65210aa85f2c43053667f3",
+    measurementId: "G-RD4CWTL6KG"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  
+  // Predefined search suggestions
+  const searchSuggestions = [
+    "Premier League", "Lionel Messi", "Cristiano Ronaldo", "NBA", "LeBron James",
+    "Champions League", "Neymar Jr", "La Liga", "Stephen Curry", "Serie A",
+    "Kylian Mbappé", "Bundesliga", "Giannis Antetokounmpo", "Ligue 1", "Kevin Durant"
+  ];
+  
+  let allArticles = [];
+  let allVideos = [];
+  let searchTimeout = null;
+  
+  document.addEventListener('DOMContentLoaded', function() {
+    // Set up home button
+    document.getElementById('homeButton').addEventListener('click', function() {
+      window.location.href = 'index.html';
+    });
+    
+    // Set up search functionality
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    
+    searchInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        performSearch(searchInput.value.trim());
+      } else {
+        // Debounce the search to avoid too many requests
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          if (searchInput.value.trim().length > 2) {
+            performSearch(searchInput.value.trim());
+          }
+        }, 300);
+      }
+    });
+    
+    searchButton.addEventListener('click', function() {
+      performSearch(searchInput.value.trim());
+    });
+    
+    // Load suggestions
+    loadSuggestions();
+    
+    // Load all content for searching
+    loadAllContent();
+  });
+  
+  function loadSuggestions() {
+    const suggestionsContainer = document.getElementById('suggestions');
+    
+    // Shuffle suggestions and take 5
+    const shuffled = [...searchSuggestions].sort(() => 0.5 - Math.random());
+    const selectedSuggestions = shuffled.slice(0, 5);
+    
+    suggestionsContainer.innerHTML = '';
+    
+    selectedSuggestions.forEach(suggestion => {
+      const suggestionElement = document.createElement('div');
+      suggestionElement.className = 'suggestion';
+      suggestionElement.textContent = suggestion;
+      
+      suggestionElement.addEventListener('click', function() {
+        document.getElementById('searchInput').value = suggestion;
+        performSearch(suggestion);
+      });
+      
+      suggestionsContainer.appendChild(suggestionElement);
+    });
+  }
+  
+  async function loadAllContent() {
+    try {
+      // Load articles
+      const articlesQuery = query(collection(db, 'articles'), orderBy('timestamp', 'desc'));
+      const articlesSnapshot = await getDocs(articlesQuery);
+      allArticles = articlesSnapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        type: 'article',
+        ...doc.data() 
+      }));
+      
+      // Load videos
+      const videosQuery = query(collection(db, 'videos'), orderBy('timestamp', 'desc'));
+      const videosSnapshot = await getDocs(videosQuery);
+      allVideos = videosSnapshot.docs.map(doc => ({ 
+        id: doc.id, 
+        type: 'video',
+        ...doc.data() 
+      }));
+      
+    } catch (error) {
+      console.error('Error loading content:', error);
+      showError('Failed to load content. Please try again later.');
+    }
+  }
+  
+  function performSearch(searchTerm) {
+    if (!searchTerm) {
+      document.getElementById('resultsInfo').textContent = 'Enter a search term to find content';
+      document.getElementById('resultsContainer').innerHTML = '';
+      return;
+    }
+    
+    document.getElementById('resultsInfo').textContent = 'Searching...';
+    document.getElementById('resultsContainer').innerHTML = '<div class="loading">Searching...</div>';
+    
+    // Simulate search delay for better UX (even though it's fast)
+    setTimeout(() => {
+      const results = searchContent(searchTerm);
+      displayResults(results, searchTerm);
+    }, 300);
+  }
+  
+  function searchContent(searchTerm) {
+    if (!searchTerm) return [];
+    
+    const term = searchTerm.toLowerCase();
+    const results = [];
+    
+    // Search in articles
+    allArticles.forEach(article => {
+      let score = 0;
+      
+      // Check title
+      if (article.title && article.title.toLowerCase().includes(term)) {
+        score += 5;
+      }
+      
+      // Check description (strip HTML tags)
+      if (article.description) {
+        const plainText = article.description.replace(/<[^>]*>/g, '');
+        if (plainText.toLowerCase().includes(term)) {
+          score += 3;
+        }
+      }
+      
+      if (score > 0) {
+        results.push({
+          ...article,
+          score: score
+        });
+      }
+    });
+    
+    // Search in videos
+    allVideos.forEach(video => {
+      let score = 0;
+      
+      // Check title
+      if (video.title && video.title.toLowerCase().includes(term)) {
+        score += 5;
+      }
+      
+      if (score > 0) {
+        results.push({
+          ...video,
+          score: score
+        });
+      }
+    });
+    
+    // Sort by score (highest first)
+    return results.sort((a, b) => b.score - a.score);
+  }
+  
+  function displayResults(results, searchTerm) {
+    const resultsContainer = document.getElementById('resultsContainer');
+    const resultsInfo = document.getElementById('resultsInfo');
+    
+    if (results.length === 0) {
+      resultsInfo.textContent = `No results found for "${searchTerm}"`;
+      resultsContainer.innerHTML = `
+        <div class="no-results">
+          <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px;"></i>
+          <h3>No results found</h3>
+          <p>Try different keywords or check the spelling</p>
+        </div>
+      `;
+      return;
+    }
+    
+    resultsInfo.textContent = `Found ${results.length} results for "${searchTerm}"`;
+    resultsContainer.innerHTML = '';
+    
+    results.forEach(item => {
+      if (item.type === 'article') {
+        const articleElement = createArticleResult(item);
+        resultsContainer.appendChild(articleElement);
+      } else if (item.type === 'video') {
+        const videoElement = createVideoResult(item);
+        resultsContainer.appendChild(videoElement);
+      }
+    });
+  }
+  
+  function createArticleResult(article) {
+    const articleDiv = document.createElement('div');
+    articleDiv.className = 'result-item article-result';
+    
+    // Strip HTML tags from description for preview
+    const plainDescription = article.description ? 
+      article.description.replace(/<[^>]*>/g, '').substring(0, 150) + '...' : 
+      'No description available';
+    
+    articleDiv.innerHTML = `
+      ${article.image ? `<img src="${article.image}" alt="${article.title}" class="article-image">` : ''}
+      <div class="article-content">
+        <h3 class="article-title">${article.title || 'Untitled Article'}</h3>
+        <div class="article-desc">${plainDescription}</div>
+      </div>
+    `;
+    
+    articleDiv.addEventListener('click', () => {
+      // Save the current page as return URL
+      localStorage.setItem('returnUrl', window.location.href);
+      window.location.href = `view.html?id=${article.id}`;
+    });
+    
+    return articleDiv;
+  }
+  
+  function createVideoResult(video) {
+    const videoDiv = document.createElement('div');
+    videoDiv.className = 'result-item video-result';
+    
+    const videoId = getYouTubeId(video.link);
+    const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+    
+    videoDiv.innerHTML = `
+      <div class="video-thumbnail">
+        <img src="${thumbnailUrl}" alt="${video.title}">
+        <div class="video-play-icon"><i class="fas fa-play-circle"></i></div>
+      </div>
+      <h3 class="video-title">${video.title || 'Untitled Video'}</h3>
+    `;
+    
+    videoDiv.addEventListener('click', () => {
+      openVideoPopup(video.link);
+    });
+    
+    return videoDiv;
+  }
+  
+  // Function to extract YouTube ID from URL
+  function getYouTubeId(url) {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+  
+  // Function to open video popup
+  function openVideoPopup(videoUrl) {
+    const videoPopup = document.getElementById('video-popup');
+    const videoPopupIframe = document.getElementById('video-popup-iframe');
+    const videoId = getYouTubeId(videoUrl);
+    
+    if (!videoId) {
+      showError('Invalid video URL');
+      return;
+    }
+    
+    videoPopupIframe.innerHTML = `
+      <iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen>
+      </iframe>
+    `;
+    
+    videoPopup.style.display = 'flex';
+    
+    // Add event to close popup when clicking close button
+    document.getElementById('video-popup-close').addEventListener('click', () => {
+      videoPopup.style.display = 'none';
+      videoPopupIframe.innerHTML = '';
+    });
+    
+    // Add event to close popup when clicking outside
+    videoPopup.addEventListener('click', (e) => {
+      if (e.target === videoPopup) {
+        videoPopup.style.display = 'none';
+        videoPopupIframe.innerHTML = '';
+      }
+    });
+  }
+  
+  function showError(message) {
+    const resultsContainer = document.getElementById('resultsContainer');
+    resultsContainer.innerHTML = `
+      <div class="error">
+        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+        <h3>Error</h3>
+        <p>${message}</p>
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>
