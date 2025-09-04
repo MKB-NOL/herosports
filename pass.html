@@ -1,1 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HERO Sports Admin Pin</title>
+<style>
+  body {
+    margin:0;
+    font-family:'Roboto',sans-serif;
+    background:#FDFDFD;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    min-height:100vh;
+    padding-top:50px;
+  }
+  .logo {
+    display:flex;
+    align-items:center;
+    margin-bottom:20px;
+  }
+  .logo img {
+    width:60px;
+    margin-right:10px;
+  }
+  .logo span {
+    font-weight:bold;
+    font-size:1.5rem;
+  }
+  #feedback {
+    margin-bottom:30px;
+    font-size:1.2rem;
+    min-height:24px;
+    display:none; /* hidden by default */
+    font-weight:bold;
+  }
+  .grid {
+    display:grid;
+    grid-template-columns:repeat(3,80px);
+    grid-gap:15px;
+  }
+  .grid button {
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    border:2px solid #000;
+    font-size:1.5rem;
+    cursor:pointer;
+    background:#fff;
+    transition:0.2s;
+  }
+  .grid button:hover {
+    background:#000;
+    color:#fff;
+  }
+  .grid button:disabled {
+    background:#ccc;
+    color:#666;
+    cursor:not-allowed;
+  }
+</style>
+</head>
+<body>
+
+<div class="logo">
+  <img src="https://i.ibb.co/65R703b/SPORTS-removebg-preview.png" alt="Logo">
+  <span>ADMIN</span>
+</div>
+
+<div id="feedback"></div>
+
+<div class="grid">
+  <button data-num="1">1</button>
+  <button data-num="2">2</button>
+  <button data-num="3">3</button>
+  <button data-num="4">4</button>
+  <button data-num="5">5</button>
+  <button data-num="6">6</button>
+  <button data-num="7">7</button>
+  <button data-num="8">8</button>
+  <button data-num="9">9</button>
+</div>
+
+<script>
+const feedback = document.getElementById('feedback');
+const buttons = document.querySelectorAll('.grid button');
+let pinInput = '';
+const validPins = ['7744', '2584'];
+
+// Local storage keys
+const STORAGE_FAILS = 'pinFails';
+const STORAGE_BLOCK = 'pinBlockTime';
+
+// Constants
+const MAX_ATTEMPTS = 5;
+const WARN_AT = 3;
+const BLOCK_DURATION = 2 * 60 * 60 * 1000; // 2 hours in ms
+
+// Functions
+function blockAllButtons(){
+  buttons.forEach(b => b.disabled = true);
+}
+
+function resetFails(){
+  localStorage.removeItem(STORAGE_FAILS);
+}
+
+function incrementFails(){
+  let fails = parseInt(localStorage.getItem(STORAGE_FAILS) || '0');
+  fails++;
+  localStorage.setItem(STORAGE_FAILS, fails);
+  return fails;
+}
+
+// Check if user is blocked on load
+const blockTime = localStorage.getItem(STORAGE_BLOCK);
+if(blockTime && Date.now() < parseInt(blockTime)){
+  blockAllButtons();
+  const remaining = Math.ceil((parseInt(blockTime) - Date.now())/60000);
+  feedback.style.display = 'block';
+  feedback.style.color = 'red';
+  feedback.textContent = `Too many failed attempts! Try again in ${remaining} minutes.`;
+}
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', ()=>{
+    if(btn.disabled) return; // do nothing if blocked
+
+    if(pinInput.length < 4){
+      pinInput += btn.dataset.num;
+      feedback.style.display = 'block';
+      feedback.style.color = '#000';
+      feedback.textContent = '*'.repeat(pinInput.length);
+    }
+
+    if(pinInput.length === 4){
+      if(validPins.includes(pinInput)){
+        feedback.style.color = 'green';
+        feedback.textContent = 'PIN correct! Redirecting...';
+        resetFails(); // reset failed attempts
+        localStorage.removeItem(STORAGE_BLOCK); // remove block if any
+        setTimeout(()=>{ window.location='admin.html'; }, 500);
+      } else {
+        const fails = incrementFails();
+        pinInput = '';
+        if(fails >= MAX_ATTEMPTS){
+          localStorage.setItem(STORAGE_BLOCK, Date.now() + BLOCK_DURATION);
+          blockAllButtons();
+          feedback.style.color = 'red';
+          feedback.textContent = `Too many failed attempts! Try again in 2 hours.`;
+        } else if(fails >= WARN_AT){
+          feedback.style.color = 'red';
+          feedback.textContent = `Incorrect PIN! Warning: ${MAX_ATTEMPTS - fails} attempts remaining.`;
+        } else {
+          feedback.style.color = 'red';
+          feedback.textContent = 'Incorrect PIN!';
+        }
+      }
+    }
+  });
+});
+</script>
+
+</body>
+</html>
 
