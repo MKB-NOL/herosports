@@ -7,45 +7,70 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
+  :root {
+    --primary-color: #000;
+    --secondary-color: #FDFDFD;
+    --accent-color: #E53935;
+    --text-color: #333;
+    --light-gray: #f5f5f5;
+    --border-color: #ddd;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
   body {
-    margin:0;
     font-family: 'Roboto', sans-serif;
-    background-color: #FDFDFD;
-    color: #000;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
   }
+  
+  /* Header */
   header {
-    display:flex;
-    align-items:center;
-    padding:10px 20px;
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
     font-family: 'Oswald', sans-serif;
-    font-weight:700;
+    font-weight: 700;
     background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     z-index: 100;
   }
+  
   header img {
-    height:50px;
-    margin-right:10px;
+    height: 45px;
+    margin-right: 10px;
   }
+  
   .home-btn {
     margin-left: auto;
     background: none;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 5px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .home-btn:hover {
+    background-color: var(--light-gray);
   }
   
   /* Search section */
   .search-container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 30px auto;
     padding: 0 20px;
     width: 100%;
@@ -59,15 +84,14 @@
   .search-input {
     width: 100%;
     padding: 15px 50px 15px 15px;
-    font-size: 1.1rem;
-    border: 2px solid #ddd;
-    border-radius: 30px;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
     outline: none;
     transition: border-color 0.3s;
   }
   
   .search-input:focus {
-    border-color: #000;
+    border-color: var(--primary-color);
   }
   
   .search-icon {
@@ -90,7 +114,6 @@
   .suggestion {
     background: #f0f0f0;
     padding: 8px 15px;
-    border-radius: 20px;
     font-size: 0.9rem;
     cursor: pointer;
     transition: background 0.3s;
@@ -102,7 +125,7 @@
   
   .separator {
     height: 1px;
-    background-color: #ddd;
+    background-color: var(--border-color);
     margin: 20px 0;
   }
   
@@ -113,16 +136,27 @@
   }
   
   .results-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 20px;
+  }
+  
+  @media (min-width: 768px) {
+    .results-container {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .results-container {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
   
   .result-item {
     background: #fff;
-    border-radius: 8px;
+    border: 1px solid var(--border-color);
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     transition: transform 0.3s ease;
   }
   
@@ -132,21 +166,27 @@
   
   .article-result {
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
   
   .article-image {
     width: 100%;
-    height: 200px;
+    height: 180px;
     object-fit: cover;
   }
   
   .article-content {
     padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
   
   .article-title {
     font-family: 'Oswald', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     margin: 0 0 10px;
   }
   
@@ -157,10 +197,14 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    flex-grow: 1;
   }
   
   .video-result {
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
   
   .video-thumbnail {
@@ -170,14 +214,13 @@
     background-color: #000;
   }
   
-  .video-thumbnail iframe,
   .video-thumbnail img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    border: none;
+    object-fit: cover;
   }
   
   .video-play-icon {
@@ -198,13 +241,16 @@
   .video-title {
     padding: 15px;
     font-family: 'Oswald', sans-serif;
-    font-size: 1.1rem;
-    text-align: center;
+    font-size: 1rem;
     margin: 0;
+    text-align: left;
+    flex-grow: 1;
   }
   
-  .video-title::before, .video-title::after {
-    content: '"';
+  .video-title blockquote {
+    margin: 0;
+    padding: 0;
+    font-style: italic;
   }
   
   /* Video popup */
@@ -215,7 +261,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0,0,0,0.95);
     z-index: 1000;
     justify-content: center;
     align-items: center;
@@ -223,8 +269,8 @@
   
   .video-popup-content {
     position: relative;
-    width: 90%;
-    max-width: 800px;
+    width: 95%;
+    max-width: 900px;
     background: #000;
   }
   
@@ -233,8 +279,9 @@
     top: -40px;
     right: 0;
     color: #fff;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     cursor: pointer;
+    z-index: 1001;
   }
   
   .video-popup-iframe {
@@ -242,30 +289,51 @@
     aspect-ratio: 16/9;
   }
   
+  .video-popup-iframe iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  
   /* No results */
   .no-results {
     text-align: center;
-    padding: 40px;
+    padding: 40px 20px;
     color: #666;
+    grid-column: 1 / -1;
+  }
+  
+  .no-results i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
   }
   
   /* Loading */
   .loading {
     text-align: center;
-    padding: 40px;
-    font-size: 1.2rem;
+    padding: 40px 20px;
+    font-size: 1.1rem;
+    grid-column: 1 / -1;
   }
   
   /* Error */
   .error {
     text-align: center;
-    padding: 40px;
+    padding: 40px 20px;
     color: #ff2d55;
+    grid-column: 1 / -1;
+  }
+  
+  .error i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    display: block;
   }
   
   /* Footer */
   footer {
-    background-color: #000;
+    background-color: var(--primary-color);
     color: #fff;
     padding: 30px 20px;
     margin-top: auto;
@@ -288,7 +356,7 @@
   .footer-section h3 {
     font-family: 'Oswald', sans-serif;
     margin-bottom: 15px;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     border-bottom: 1px solid #444;
     padding-bottom: 5px;
   }
@@ -299,22 +367,28 @@
     text-decoration: none;
     margin-bottom: 8px;
     transition: color 0.3s;
+    font-size: 0.9rem;
   }
   
   .footer-links a:hover {
     color: #fff;
   }
   
+  .footer-social {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
   .footer-social a {
-    display: inline-block;
-    color: #fff;
-    background-color: #333;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 36px;
     height: 36px;
-    border-radius: 50%;
-    text-align: center;
-    line-height: 36px;
-    margin-right: 10px;
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
     transition: background-color 0.3s;
   }
   
@@ -324,13 +398,13 @@
   
   .admin-link {
     display: inline-block;
-    margin-top: 15px;
+    margin-top: 12px;
     padding: 8px 15px;
     background-color: #333;
     color: #fff;
     text-decoration: none;
-    border-radius: 4px;
     transition: background-color 0.3s;
+    font-size: 0.9rem;
   }
   
   .admin-link:hover {
@@ -343,7 +417,7 @@
     padding-top: 20px;
     border-top: 1px solid #444;
     color: #999;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
   
   .author-link {
@@ -352,19 +426,96 @@
     margin-left: 5px;
   }
   
-  /* Responsive */
+  /* Responsive adjustments */
   @media (max-width: 768px) {
+    header {
+      padding: 10px 15px;
+    }
+    
+    header img {
+      height: 40px;
+    }
+    
+    header span {
+      font-size: 0.9rem;
+    }
+    
+    .home-btn {
+      font-size: 1rem;
+      padding: 6px 10px;
+    }
+    
+    .home-btn span {
+      display: none;
+    }
+    
     .search-container {
       padding: 0 15px;
+      margin: 20px auto;
     }
     
     .search-input {
       padding: 12px 45px 12px 12px;
+      font-size: 0.95rem;
+    }
+    
+    .suggestions {
+      gap: 8px;
+    }
+    
+    .suggestion {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+    }
+    
+    .article-image {
+      height: 150px;
+    }
+    
+    .article-content, .video-title {
+      padding: 12px;
+    }
+    
+    .article-title {
       font-size: 1rem;
+    }
+    
+    .video-title {
+      font-size: 0.95rem;
     }
     
     .footer-section {
       min-width: 100%;
+    }
+    
+    .footer-content {
+      flex-direction: column;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .search-container {
+      margin: 15px auto;
+    }
+    
+    .results-container {
+      gap: 15px;
+    }
+    
+    .article-image {
+      height: 130px;
+    }
+    
+    .suggestions {
+      justify-content: center;
+    }
+    
+    .no-results, .loading, .error {
+      padding: 30px 15px;
+    }
+    
+    .no-results i, .error i {
+      font-size: 2.5rem;
     }
   }
 </style>
@@ -375,7 +526,8 @@
   <img src="https://i.ibb.co/65R703b/SPORTS-removebg-preview.png" alt="Logo">
   <span>HERO Sports Search</span>
   <button class="home-btn" id="homeButton">
-    <i class="fas fa-home"></i> Home
+    <i class="fas fa-home"></i>
+    <span>Home</span>
   </button>
 </header>
 
@@ -635,7 +787,7 @@
       resultsInfo.textContent = `No results found for "${searchTerm}"`;
       resultsContainer.innerHTML = `
         <div class="no-results">
-          <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 15px;"></i>
+          <i class="fas fa-search"></i>
           <h3>No results found</h3>
           <p>Try different keywords or check the spelling</p>
         </div>
@@ -695,7 +847,7 @@
         <img src="${thumbnailUrl}" alt="${video.title}">
         <div class="video-play-icon"><i class="fas fa-play-circle"></i></div>
       </div>
-      <h3 class="video-title">${video.title || 'Untitled Video'}</h3>
+      <h3 class="video-title"><blockquote>${video.title || 'Untitled Video'}</blockquote></h3>
     `;
     
     videoDiv.addEventListener('click', () => {
@@ -747,13 +899,22 @@
         videoPopupIframe.innerHTML = '';
       }
     });
+    
+    // Close on escape key
+    document.addEventListener('keydown', function closeOnEscape(e) {
+      if (e.key === 'Escape') {
+        videoPopup.style.display = 'none';
+        videoPopupIframe.innerHTML = '';
+        document.removeEventListener('keydown', closeOnEscape);
+      }
+    });
   }
   
   function showError(message) {
     const resultsContainer = document.getElementById('resultsContainer');
     resultsContainer.innerHTML = `
       <div class="error">
-        <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 15px;"></i>
+        <i class="fas fa-exclamation-circle"></i>
         <h3>Error</h3>
         <p>${message}</p>
       </div>
