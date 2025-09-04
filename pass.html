@@ -4,87 +4,239 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HERO Sports Admin Pin</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --primary-color: #000;
+    --secondary-color: #f8f8f8;
+    --accent-color: #e53935;
+    --success-color: #4caf50;
+    --warning-color: #ff9800;
+    --error-color: #f44336;
+    --text-color: #333;
+    --border-color: #ddd;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
   body {
-    margin:0;
-    font-family:'Roboto',sans-serif;
-    background:#FDFDFD;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-    min-height:100vh;
-    padding-top:50px;
+    font-family: 'Roboto', sans-serif;
+    background: var(--secondary-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--text-color);
   }
+  
+  .container {
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    padding: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    position: relative;
+  }
+  
   .logo {
-    display:flex;
-    align-items:center;
-    margin-bottom:20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
   }
+  
   .logo img {
-    width:60px;
-    margin-right:10px;
+    width: 70px;
+    margin-right: 12px;
   }
+  
   .logo span {
-    font-weight:bold;
-    font-size:1.5rem;
+    font-weight: 700;
+    font-size: 1.8rem;
+    letter-spacing: 1px;
   }
+  
+  .title {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 1.2rem;
+    color: #666;
+  }
+  
   #feedback {
-    margin-bottom:30px;
-    font-size:1.2rem;
-    min-height:24px;
-    display:none; /* hidden by default */
-    font-weight:bold;
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+    min-height: 24px;
+    text-align: center;
+    padding: 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    display: none; /* hidden by default */
   }
+  
+  .pin-display {
+    background: var(--secondary-color);
+    height: 60px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+    letter-spacing: 8px;
+    padding-right: 8px;
+    font-weight: 500;
+    border: 1px solid var(--border-color);
+  }
+  
   .grid {
-    display:grid;
-    grid-template-columns:repeat(3,80px);
-    grid-gap:15px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
   }
+  
   .grid button {
-    width:80px;
-    height:80px;
-    border-radius:50%;
-    border:2px solid #000;
-    font-size:1.5rem;
-    cursor:pointer;
-    background:#fff;
-    transition:0.2s;
+    height: 70px;
+    border: 2px solid var(--primary-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    border-radius: 8px;
   }
+  
   .grid button:hover {
-    background:#000;
-    color:#fff;
+    background: var(--primary-color);
+    color: #fff;
+    transform: translateY(-2px);
   }
+  
+  .grid button:active {
+    transform: translateY(0);
+  }
+  
   .grid button:disabled {
-    background:#ccc;
-    color:#666;
-    cursor:not-allowed;
+    background: #f0f0f0;
+    color: #999;
+    border-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .back-button {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border-radius: 8px;
+  }
+  
+  .back-button:hover {
+    background: var(--primary-color);
+    color: #fff;
+  }
+  
+  /* Status colors */
+  .status-default {
+    color: var(--text-color);
+    background-color: var(--secondary-color);
+  }
+  
+  .status-success {
+    color: var(--success-color);
+    background-color: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.2);
+  }
+  
+  .status-warning {
+    color: var(--warning-color);
+    background-color: rgba(255, 152, 0, 0.1);
+    border: 1px solid rgba(255, 152, 0, 0.2);
+  }
+  
+  .status-error {
+    color: var(--error-color);
+    background-color: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.2);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    .container {
+      padding: 20px;
+    }
+    
+    .logo img {
+      width: 60px;
+    }
+    
+    .logo span {
+      font-size: 1.5rem;
+    }
+    
+    .grid button {
+      height: 60px;
+      font-size: 1.3rem;
+    }
+    
+    .pin-display {
+      height: 50px;
+      font-size: 1.3rem;
+    }
   }
 </style>
 </head>
 <body>
 
-<div class="logo">
-  <img src="https://i.ibb.co/65R703b/SPORTS-removebg-preview.png" alt="Logo">
-  <span>ADMIN</span>
-</div>
-
-<div id="feedback"></div>
-
-<div class="grid">
-  <button data-num="1">1</button>
-  <button data-num="2">2</button>
-  <button data-num="3">3</button>
-  <button data-num="4">4</button>
-  <button data-num="5">5</button>
-  <button data-num="6">6</button>
-  <button data-num="7">7</button>
-  <button data-num="8">8</button>
-  <button data-num="9">9</button>
+<div class="container">
+  <div class="logo">
+    <img src="https://i.ibb.co/65R703b/SPORTS-removebg-preview.png" alt="HERO Sports Logo">
+    <span>ADMIN</span>
+  </div>
+  
+  <div class="title">Enter your 4-digit PIN to continue</div>
+  
+  <div class="pin-display" id="pinDisplay">----</div>
+  
+  <div id="feedback"></div>
+  
+  <div class="grid">
+    <button data-num="1">1</button>
+    <button data-num="2">2</button>
+    <button data-num="3">3</button>
+    <button data-num="4">4</button>
+    <button data-num="5">5</button>
+    <button data-num="6">6</button>
+    <button data-num="7">7</button>
+    <button data-num="8">8</button>
+    <button data-num="9">9</button>
+  </div>
+  
+  <a href="index2.html" class="back-button">
+    <i class="fas fa-arrow-left"></i> Back to Home
+  </a>
 </div>
 
 <script>
 const feedback = document.getElementById('feedback');
+const pinDisplay = document.getElementById('pinDisplay');
 const buttons = document.querySelectorAll('.grid button');
 let pinInput = '';
 const validPins = ['7744', '2584'];
@@ -99,8 +251,27 @@ const WARN_AT = 3;
 const BLOCK_DURATION = 2 * 60 * 60 * 1000; // 2 hours in ms
 
 // Functions
+function updatePinDisplay() {
+  let displayText = '';
+  for (let i = 0; i < 4; i++) {
+    displayText += i < pinInput.length ? '•' : '-';
+  }
+  pinDisplay.textContent = displayText;
+}
+
+function setFeedback(message, status) {
+  feedback.textContent = message;
+  feedback.style.display = 'block';
+  feedback.className = '';
+  feedback.classList.add(`status-${status}`);
+}
+
 function blockAllButtons(){
   buttons.forEach(b => b.disabled = true);
+}
+
+function unblockAllButtons(){
+  buttons.forEach(b => b.disabled = false);
 }
 
 function resetFails(){
@@ -119,10 +290,15 @@ const blockTime = localStorage.getItem(STORAGE_BLOCK);
 if(blockTime && Date.now() < parseInt(blockTime)){
   blockAllButtons();
   const remaining = Math.ceil((parseInt(blockTime) - Date.now())/60000);
-  feedback.style.display = 'block';
-  feedback.style.color = 'red';
-  feedback.textContent = `Too many failed attempts! Try again in ${remaining} minutes.`;
+  setFeedback(`Too many failed attempts! Try again in ${remaining} minutes.`, 'error');
+} else if (blockTime) {
+  // Block time has passed, clear it
+  localStorage.removeItem(STORAGE_BLOCK);
+  localStorage.removeItem(STORAGE_FAILS);
 }
+
+// Initialize pin display
+updatePinDisplay();
 
 buttons.forEach(btn => {
   btn.addEventListener('click', ()=>{
@@ -130,39 +306,45 @@ buttons.forEach(btn => {
 
     if(pinInput.length < 4){
       pinInput += btn.dataset.num;
-      feedback.style.display = 'block';
-      feedback.style.color = '#000';
-      feedback.textContent = '*'.repeat(pinInput.length);
+      updatePinDisplay();
+      
+      if (pinInput.length === 1) {
+        setFeedback('Enter your PIN', 'default');
+      }
     }
 
     if(pinInput.length === 4){
       if(validPins.includes(pinInput)){
-        feedback.style.color = 'green';
-        feedback.textContent = 'PIN correct! Redirecting...';
+        setFeedback('PIN correct! Redirecting...', 'success');
         resetFails(); // reset failed attempts
         localStorage.removeItem(STORAGE_BLOCK); // remove block if any
-        setTimeout(()=>{ window.location='admin.html'; }, 500);
+        setTimeout(()=>{ window.location='admin.html'; }, 800);
       } else {
         const fails = incrementFails();
-        pinInput = '';
+        
         if(fails >= MAX_ATTEMPTS){
           localStorage.setItem(STORAGE_BLOCK, Date.now() + BLOCK_DURATION);
           blockAllButtons();
-          feedback.style.color = 'red';
-          feedback.textContent = `Too many failed attempts! Try again in 2 hours.`;
+          setFeedback(`Too many failed attempts! Try again in 2 hours.`, 'error');
         } else if(fails >= WARN_AT){
-          feedback.style.color = 'red';
-          feedback.textContent = `Incorrect PIN! Warning: ${MAX_ATTEMPTS - fails} attempts remaining.`;
+          setFeedback(`Incorrect PIN! Warning: ${MAX_ATTEMPTS - fails} attempts remaining.`, 'warning');
         } else {
-          feedback.style.color = 'red';
-          feedback.textContent = 'Incorrect PIN!';
+          setFeedback('Incorrect PIN! Try again.', 'error');
         }
+        
+        // Clear input after a brief delay to show the error
+        setTimeout(() => {
+          pinInput = '';
+          updatePinDisplay();
+        }, 800);
       }
     }
   });
 });
 </script>
 
+<!-- Font Awesome for the back button icon -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+
 </body>
 </html>
-
