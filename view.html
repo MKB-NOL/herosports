@@ -549,18 +549,26 @@
       <div class="related-grid" id="relatedGrid">
         <!-- Related articles will be loaded here -->
       </div>
-      <script>
-(function(mnmdy){
-var d = document,
-    s = d.createElement('script'),
-    l = d.scripts[d.scripts.length - 1];
-s.settings = mnmdy || {};
-s.src = "\/\/weepy-attack.com\/bDX\/Vosfd.GLla0CYwWxcu\/Ae\/mH9Bu-Z\/ULlbkcPSTUY\/2tMGzxkc0HMqTeQstXNqjbYPz\/O\/TjQLxlNpQB";
-s.async = true;
-s.referrerPolicy = 'no-referrer-when-downgrade';
-l.parentNode.insertBefore(s, l);
-})({})
+<!-- Video Slider container -->
+<div id="video-slider-container" style="width: 100%; max-width: 600px; margin: auto;"></div>
+
+<!-- Hilltop Video Slider script -->
+<script>
+(function(hilltopSlider){
+    var d = document,
+        s = d.createElement('script'),
+        l = d.scripts[d.scripts.length - 1];
+    s.src = "https://cdn.hilltopads.com/videoslider.js"; // Official Hilltop URL
+    s.async = true;
+    s.defer = true;
+
+    // Target the specific container
+    s.settings = { containerId: "video-slider-container" };
+
+    l.parentNode.insertBefore(s, l);
+})();
 </script>
+
     </div>
     
     <!-- Comments section -->
