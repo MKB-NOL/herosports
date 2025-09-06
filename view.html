@@ -549,27 +549,9 @@
       <div class="related-grid" id="relatedGrid">
         <!-- Related articles will be loaded here -->
       </div>
+      </div>
 <!-- Video Slider container -->
 <div id="video-slider-container" style="width: 100%; max-width: 600px; margin: auto;"></div>
-
-<!-- Hilltop Video Slider script -->
-<script>
-(function(hilltopSlider){
-    var d = document,
-        s = d.createElement('script'),
-        l = d.scripts[d.scripts.length - 1];
-    s.src = "https://cdn.hilltopads.com/videoslider.js"; // Official Hilltop URL
-    s.async = true;
-    s.defer = true;
-
-    // Target the specific container
-    s.settings = { containerId: "video-slider-container" };
-
-    l.parentNode.insertBefore(s, l);
-})();
-</script>
-
-    </div>
     
     <!-- Comments section -->
     <div class="comments-section">
@@ -1088,6 +1070,24 @@
     `;
   }
 </script>
+
+<!-- Hilltop Video Slider script -->
+<script>
+(function(hilltopSlider){
+    var d = document,
+        s = d.createElement('script'),
+        l = d.scripts[d.scripts.length - 1];
+    s.src = "https://cdn.hilltopads.com/videoslider.js"; // Official Hilltop URL
+    s.async = true;
+    s.defer = true;
+
+    // Target the specific container
+    s.settings = { containerId: "video-slider-container" };
+
+    l.parentNode.insertBefore(s, l);
+})();
+</script>
+  
  <script>
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('sw.js')
