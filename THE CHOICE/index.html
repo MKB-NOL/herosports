@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HERO SPORTS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+        }
+
+        body {
+            background: #ffffff;
+            color: #1a1a1a;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== NOTIFICATION ===== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #1a1a1a;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 90%;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            background: #00a86b;
+        }
+
+        .notification.error {
+            background: #ff3b30;
+        }
+
+        .notification.info {
+            background: #007aff;
+        }
+
+        /* ===== VIEWS ===== */
+        .view {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* ===== LOGIN VIEW ===== */
+        .login-view {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: #ffffff;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #007aff, #5856d6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px;
+            border-radius: 0;
+        }
+
+        .app-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            letter-spacing: -0.5px;
+        }
+
+        .app-subtitle {
+            font-size: 14px;
+            color: #8e8e93;
+            font-weight: 500;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #c7c7cc;
+            background: white;
+            font-size: 16px;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            border-radius: 0;
+            font-weight: 500;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #007aff;
+        }
+
+        .admin-password {
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .admin-password.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: #007aff;
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .login-btn:active {
+            background: #0056d6;
+        }
+
+        /* ===== VOTING VIEW ===== */
+        .voting-view {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .voting-header {
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #e5e5e7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .voting-title {
+            font-size: 17px;
+            font-weight: 700;
+            flex: 1;
+            text-align: center;
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            color: #8e8e93;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .voting-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 0 16px;
+        }
+
+        .question-card {
+            background: white;
+            border: 1px solid #e5e5e7;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        .question-header {
+            padding: 16px;
+            border-bottom: 1px solid #f2f2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-number {
+            font-size: 13px;
+            color: #8e8e93;
+            font-weight: 600;
+        }
+
+        .question-text {
+            padding: 20px 16px;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .options-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: #f2f2f7;
+            margin: 0 16px 16px;
+        }
+
+        .option {
+            background: white;
+            padding: 20px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .option.selected {
+            border: 2px solid;
+        }
+
+        .option-a.selected {
+            border-color: #007aff;
+            background: rgba(0, 122, 255, 0.05);
+        }
+
+        .option-b.selected {
+            border-color: #ff3b30;
+            background: rgba(255, 59, 48, 0.05);
+        }
+
+        .option-letter {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .option-a .option-letter {
+            color: #007aff;
+        }
+
+        .option-b .option-letter {
+            color: #ff3b30;
+        }
+
+        .option-name {
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .selected-check {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: #007aff;
+            font-size: 14px;
+        }
+
+        .finish-section {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e5e5e7;
+            flex-shrink: 0;
+        }
+
+        .finish-btn {
+            width: 100%;
+            padding: 16px;
+            background: #007aff;
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .finish-btn:disabled {
+            background: #c7c7cc;
+            cursor: not-allowed;
+        }
+
+        /* ===== MAIN VIEW ===== */
+        .main-view {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .main-header {
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #e5e5e7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #007aff, #5856d6);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 0;
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .logout-btn {
+            padding: 8px 12px;
+            background: #f2f2f7;
+            color: #8e8e93;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 60px;
+        }
+
+        /* ===== AI ANALYTICS SECTION ===== */
+        .ai-section {
+            margin: 16px;
+            background: white;
+            border: 1px solid #e5e5e7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-header {
+            padding: 16px;
+            border-bottom: 1px solid #f2f2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-title {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .view-analytics-btn {
+            padding: 8px 12px;
+            background: #f2f2f7;
+            color: #007aff;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .ai-scroll-container {
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-boxes {
+            display: flex;
+            gap: 12px;
+            padding: 8px 0;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            animation: scrollRight 30s linear infinite;
+        }
+
+        .ai-boxes::-webkit-scrollbar {
+            display: none;
+        }
+
+        @keyframes scrollRight {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .ai-box {
+            flex: 0 0 auto;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #007aff, #5856d6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-box:nth-child(odd) {
+            background: linear-gradient(135deg, #ff3b30, #ff9500);
+        }
+
+        .ai-box:nth-child(3n) {
+            background: linear-gradient(135deg, #34c759, #30d158);
+        }
+
+        .ai-box:nth-child(4n) {
+            background: linear-gradient(135deg, #ffcc00, #ffd60a);
+        }
+
+        .ai-box:nth-child(5n) {
+            background: linear-gradient(135deg, #af52de, #5856d6);
+        }
+
+        .box-shortname {
+            font-size: 12px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .box-percent {
+            font-size: 22px;
+            font-weight: 900;
+            color: white;
+        }
+
+        /* ===== AI ANALYTICS MODAL ===== */
+        .ai-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        .ai-modal.active {
+            display: flex;
+        }
+
+        .ai-modal-header {
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #e5e5e7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .ai-modal-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1a1a1a;
+        }
+
+        .ai-modal-close {
+            width: 32px;
+            height: 32px;
+            background: none;
+            border: none;
+            color: #8e8e93;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .ai-modal-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .question-nav {
+            padding: 16px;
+            border-bottom: 1px solid #f2f2f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            background: #f2f2f7;
+            border: none;
+            color: #007aff;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:disabled {
+            color: #c7c7cc;
+            cursor: not-allowed;
+        }
+
+        .current-question-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            flex: 1;
+            padding: 0 12px;
+            line-height: 1.3;
+        }
+
+        .analytics-scroll {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px;
+        }
+
+        .analytics-section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1a1a1a;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .chart-bar {
+            height: 36px;
+            background: #e9ecef;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-fill {
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .chart-label {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 600;
+            z-index: 2;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .chart-value {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: 700;
+            z-index: 2;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .users-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .user-item {
+            background: #f8f9fa;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #1a1a1a;
+        }
+
+        .user-choice {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .choice-a {
+            background: #007aff;
+        }
+
+        .choice-b {
+            background: #ff3b30;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        /* ===== QUESTION SELECTOR ===== */
+        .selector-section {
+            margin: 16px;
+            background: white;
+            border: 1px solid #e5e5e7;
+        }
+
+        .selector-header {
+            padding: 16px;
+            border-bottom: 1px solid #f2f2f7;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .search-box {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f2f2f7;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e5e7;
+            background: #f8f9fa;
+            font-size: 15px;
+            border-radius: 0;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #007aff;
+        }
+
+        .questions-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .question-item {
+            padding: 16px;
+            border-bottom: 1px solid #f2f2f7;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-item:hover {
+            background: #f8f9fa;
+        }
+
+        .question-item.selected {
+            background: #f0f7ff;
+            border-left: 4px solid #007aff;
+        }
+
+        .question-preview {
+            font-size: 15px;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .question-date {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-left: 12px;
+        }
+
+        /* ===== RESULTS TABLE ===== */
+        .table-section {
+            margin: 16px;
+            background: white;
+            border: 1px solid #e5e5e7;
+            overflow: hidden;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table th {
+            padding: 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 14px;
+            border-bottom: 2px solid #e5e5e7;
+            background: #f8f9fa;
+        }
+
+        .col-a {
+            color: #007aff;
+        }
+
+        .col-b {
+            color: #ff3b30;
+        }
+
+        .results-table td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #f2f2f7;
+            vertical-align: top;
+        }
+
+        .results-table tbody {
+            max-height: 400px;
+            overflow-y: auto;
+            display: block;
+        }
+
+        .results-table tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .user-name-cell {
+            text-align: left;
+            padding-left: 16px;
+        }
+
+        .user-name-cell.you {
+            font-weight: 700;
+            color: #007aff;
+        }
+
+        .choice-a {
+            color: #007aff;
+            font-weight: 600;
+        }
+
+        .choice-b {
+            color: #ff3b30;
+            font-weight: 600;
+        }
+
+        /* ===== ADMIN VIEW ===== */
+        .admin-view {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .admin-header {
+            padding: 16px;
+            background: white;
+            border-bottom: 1px solid #e5e5e7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .admin-title {
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-back-btn {
+            padding: 8px 12px;
+            background: #f2f2f7;
+            color: #8e8e93;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .admin-card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e5e7;
+        }
+
+        .admin-card h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a1a1a;
+        }
+
+        .duration-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .duration-btn {
+            padding: 12px 8px;
+            background: white;
+            border: 1px solid #e5e5e7;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0;
+        }
+
+        .duration-btn.active {
+            background: #007aff;
+            color: white;
+            border-color: #007aff;
+        }
+
+        .admin-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .admin-action-btn {
+            flex: 1;
+            padding: 16px;
+            background: #007aff;
+            color: white;
+            border: none;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .admin-action-btn.delete {
+            background: #ff3b30;
+        }
+
+        .admin-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 12px;
+        }
+
+        .admin-item {
+            padding: 16px;
+            border-bottom: 1px solid #e5e5e7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .item-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #8e8e93;
+        }
+
+        .delete-item-btn {
+            padding: 8px;
+            background: none;
+            border: none;
+            color: #ff3b30;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            padding: 12px 16px;
+            background: white;
+            border-top: 1px solid #e5e5e7;
+            text-align: center;
+            color: #8e8e93;
+            font-size: 12px;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        /* ===== UTILITIES ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .ai-box {
+                width: 90px;
+                height: 90px;
+            }
+            
+            .box-percent {
+                font-size: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .options-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-box {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <div class="container">
+        <!-- ===== LOGIN VIEW ===== -->
+        <div id="loginView" class="view active">
+            <div class="login-view">
+                <div class="login-logo">
+                    <div class="logo-icon">⚽</div>
+                    <h1 class="app-title">HERO SPORTS</h1>
+                    <p class="app-subtitle">Make Your Choice</p>
+                </div>
+
+                <div class="login-form">
+                    <input type="text" id="userName" class="input-field" 
+                           placeholder="Enter your name" maxlength="20" autocomplete="off">
+                    
+                    <div id="adminPasswordContainer" class="admin-password">
+                        <input type="password" id="adminPassword" class="input-field" 
+                               placeholder="Admin password" maxlength="20">
+                    </div>
+                    
+                    <button id="loginButton" class="login-btn">
+                        <i class="fas fa-arrow-right"></i> Continue
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== VOTING VIEW ===== -->
+        <div id="votingView" class="view">
+            <div class="voting-view">
+                <div class="voting-header">
+                    <div></div>
+                    <div class="voting-title">Available Choices</div>
+                    <button class="close-btn" id="closeVoting">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="voting-content" id="votingContent">
+                    <!-- Questions loaded here -->
+                </div>
+
+                <div class="finish-section">
+                    <button id="finishVotingBtn" class="finish-btn" disabled>
+                        <i class="fas fa-check-circle"></i> FINISH
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== MAIN VIEW ===== -->
+        <div id="mainView" class="view">
+            <div class="main-view">
+                <div class="main-header">
+                    <div class="user-info">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <div class="user-name" id="displayUserName"></div>
+                    </div>
+                    <button class="logout-btn" id="logoutButton">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+
+                <div class="main-content">
+                    <!-- AI Analytics Section -->
+                    <div class="ai-section">
+                        <div class="ai-header">
+                            <div class="ai-title">Driven Analytics</div>
+                            <button class="view-analytics-btn" id="openAnalytics">
+                                View Analytics
+                            </button>
+                        </div>
+                        <div class="ai-scroll-container">
+                            <div class="ai-boxes" id="aiBoxes">
+                                <!-- AI boxes loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question Selector -->
+                    <div class="selector-section">
+                        <div class="selector-header">Select a Question</div>
+                        <div class="search-box">
+                            <input type="text" id="searchInput" class="search-input" 
+                                   placeholder="Search questions...">
+                        </div>
+                        <div class="questions-list" id="questionsList">
+                            <!-- Questions loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Results Table -->
+                    <div class="table-section">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-a" id="optionAHeader">Option A</th>
+                                    <th>??</th>
+                                    <th class="col-b" id="optionBHeader">Option B</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <!-- Table rows loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    HERO SPORTS • THE CHOICE • Powered by AI Analytics
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== ADMIN VIEW ===== -->
+        <div id="adminView" class="view">
+            <div class="admin-view">
+                <div class="admin-header">
+                    <div class="admin-title">
+                        <i class="fas fa-user-shield"></i> Admin Panel
+                    </div>
+                    <button class="admin-back-btn" id="adminBack">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+
+                <div class="admin-content">
+                    <div class="admin-card">
+                        <h3><i class="fas fa-plus"></i> Add New Choice</h3>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Question Number</label>
+                            <input type="number" id="adminQuestionNumber" class="input-field" 
+                                   placeholder="1" min="1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Option A (Blue)</label>
+                            <input type="text" id="adminOptionA" class="input-field" 
+                                   placeholder="Enter Option A" maxlength="30">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Option B (Red)</label>
+                            <input type="text" id="adminOptionB" class="input-field" 
+                                   placeholder="Enter Option B" maxlength="30">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Duration</label>
+                            <div class="duration-options">
+                                <div class="duration-btn active" data-hours="24">24h</div>
+                                <div class="duration-btn" data-hours="48">48h</div>
+                                <div class="duration-btn" data-hours="72">3d</div>
+                                <div class="duration-btn" data-hours="120">5d</div>
+                            </div>
+                        </div>
+                        
+                        <div class="admin-actions">
+                            <button id="addQuestionBtn" class="admin-action-btn">
+                                <i class="fas fa-plus"></i> Add Choice
+                            </button>
+                            <button id="clearAllBtn" class="admin-action-btn delete">
+                                <i class="fas fa-trash"></i> Clear All
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-card">
+                        <h3><i class="fas fa-list"></i> Active Choices</h3>
+                        <div class="admin-list" id="adminQuestionsList">
+                            <!-- Admin questions loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                    Admin Panel • Secure Access • Auto-delete Enabled
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== AI ANALYTICS MODAL ===== -->
+        <div id="aiModal" class="ai-modal">
+            <div class="ai-modal-view">
+                <div class="ai-modal-header">
+                    <div class="ai-modal-title">Driven Analytics</div>
+                    <button class="ai-modal-close" id="closeAiModal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="ai-modal-content">
+                    <div class="question-nav">
+                        <button class="nav-btn" id="prevQuestion">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="current-question-title" id="currentAnalyticsQuestion">
+                            Loading...
+                        </div>
+                        <button class="nav-btn" id="nextQuestion">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="analytics-scroll" id="analyticsContent">
+                        <!-- Analytics content loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Configuration
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getDatabase, ref, set, get, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEjkoZ6xNZbNHdW1QDddYrBTVXxHgnIRc",
+            authDomain: "rosine-e-commerce.firebaseapp.com",
+            databaseURL: "https://rosine-e-commerce-default-rtdb.firebaseio.com",
+            projectId: "rosine-e-commerce",
+            storageBucket: "rosine-e-commerce.firebasestorage.app",
+            messagingSenderId: "143638702824",
+            appId: "1:143638702824:web:faa956ee5b50c9766ab75d",
+            measurementId: "G-4CWT0L3Y98"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // App State
+        let currentUser = '';
+        let isAdmin = false;
+        let userVotes = {};
+        let allQuestions = {};
+        let activeQuestions = [];
+        let currentQuestionId = '';
+        let selectedDuration = 24;
+        let analyticsQuestions = [];
+        let currentAnalyticsIndex = 0;
+
+        // ===== NOTIFICATION SYSTEM =====
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notificationContainer');
+            container.innerHTML = '';
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Show notification
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+
+        // ===== UTILITY FUNCTIONS =====
+        function normalizeName(name) {
+            return name.trim().toLowerCase();
+        }
+
+        function getOriginalUserName(name) {
+            const normalized = normalizeName(name);
+            const allUsers = JSON.parse(localStorage.getItem('heroSportsAllUsers') || '{}');
+            return allUsers[normalized] || name;
+        }
+
+        function saveUserData() {
+            if (!currentUser || isAdmin) return;
+            
+            const userData = {
+                userName: currentUser,
+                votes: userVotes,
+                lastActive: Date.now()
+            };
+            
+            localStorage.setItem('heroSportsUserData', JSON.stringify(userData));
+            
+            // Save for case-insensitive matching
+            const allUsers = JSON.parse(localStorage.getItem('heroSportsAllUsers') || '{}');
+            const normalizedName = normalizeName(currentUser);
+            allUsers[normalizedName] = currentUser;
+            localStorage.setItem('heroSportsAllUsers', JSON.stringify(allUsers));
+        }
+
+        function loadUserData() {
+            try {
+                const userData = JSON.parse(localStorage.getItem('heroSportsUserData') || 'null');
+                if (userData && userData.userName) {
+                    currentUser = userData.userName;
+                    userVotes = userData.votes || {};
+                    document.getElementById('userName').value = userData.userName;
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        function clearUserData() {
+            localStorage.removeItem('heroSportsUserData');
+            currentUser = '';
+            userVotes = {};
+            isAdmin = false;
+        }
+
+        function setLoading(state) {
+            document.body.classList.toggle('loading', state);
+        }
+
+        // ===== VIEW MANAGEMENT =====
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        // ===== LOGIN =====
+        document.getElementById('userName').addEventListener('input', function() {
+            const value = normalizeName(this.value);
+            const adminContainer = document.getElementById('adminPasswordContainer');
+            
+            if (value === 'admin') {
+                adminContainer.classList.add('show');
+                document.getElementById('adminPassword').focus();
+            } else {
+                adminContainer.classList.remove('show');
+            }
+        });
+
+        async function handleLogin() {
+            try {
+                setLoading(true);
+                
+                const userName = document.getElementById('userName').value.trim();
+                const password = document.getElementById('adminPassword').value;
+                
+                if (!userName || userName.length < 2) {
+                    showNotification('Please enter a valid name (min 2 characters)', 'error');
+                    setLoading(false);
+                    return;
+                }
+                
+                const normalizedName = normalizeName(userName);
+                
+                // Check for admin login
+                if (normalizedName === 'admin') {
+                    if (password === 'admin123') {
+                        currentUser = 'Admin';
+                        isAdmin = true;
+                        showView('adminView');
+                        loadAdminQuestions();
+                        showNotification('Admin login successful', 'success');
+                    } else {
+                        showNotification('Incorrect admin password', 'error');
+                    }
+                    setLoading(false);
+                    return;
+                }
+                
+                // Regular user login
+                currentUser = getOriginalUserName(userName);
+                
+                // Check for existing votes
+                const userData = JSON.parse(localStorage.getItem('heroSportsUserData') || '{}');
+                if (userData.userName && normalizeName(userData.userName) === normalizedName) {
+                    userVotes = userData.votes || {};
+                }
+                
+                // Load active questions
+                const questionsRef = ref(database, 'questions');
+                const snapshot = await get(questionsRef);
+                
+                if (!snapshot.exists()) {
+                    showNotification('No questions available yet', 'info');
+                    setLoading(false);
+                    return;
+                }
+                
+                const questions = snapshot.val();
+                const now = Date.now();
+                
+                // Filter active questions
+                allQuestions = {};
+                activeQuestions = [];
+                
+                Object.entries(questions).forEach(([id, question]) => {
+                    if (!question.expiryTime || question.expiryTime > now) {
+                        allQuestions[id] = question;
+                        if (!userVotes[id]) {
+                            activeQuestions.push({ id, ...question });
+                        }
+                    }
+                });
+                
+                if (activeQuestions.length > 0) {
+                    showView('votingView');
+                    loadVotingQuestions();
+                } else {
+                    showMainView();
+                }
+                
+                // Save user data
+                saveUserData();
+                
+                setLoading(false);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showNotification('Login failed. Please try again.', 'error');
+                setLoading(false);
+            }
+        }
+
+        document.getElementById('loginButton').addEventListener('click', handleLogin);
+
+        document.getElementById('userName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        document.getElementById('adminPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        // ===== VOTING =====
+        function loadVotingQuestions() {
+            const container = document.getElementById('votingContent');
+            
+            if (activeQuestions.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 60px 20px; text-align: center; color: #8e8e93;">
+                        <i class="fas fa-check-circle" style="font-size: 48px; margin-bottom: 16px;"></i>
+                        <p>No new questions to vote on</p>
+                    </div>
+                `;
+                document.getElementById('finishVotingBtn').disabled = true;
+                return;
+            }
+            
+            let html = '';
+            activeQuestions.forEach(question => {
+                const userChoice = userVotes[question.id];
+                
+                html += `
+                    <div class="question-card">
+                        <div class="question-header">
+                            <div class="question-number">CHOICE ${question.number}</div>
+                        </div>
+                        <div class="question-text">${question.optionA} vs ${question.optionB}</div>
+                        <div class="options-row">
+                            <div class="option option-a ${userChoice === 'A' ? 'selected' : ''}" 
+                                 data-id="${question.id}" data-choice="A">
+                                ${userChoice === 'A' ? '<div class="selected-check"><i class="fas fa-check"></i></div>' : ''}
+                                <div class="option-letter">A</div>
+                                <div class="option-name">${question.optionA}</div>
+                            </div>
+                            <div class="option option-b ${userChoice === 'B' ? 'selected' : ''}" 
+                                 data-id="${question.id}" data-choice="B">
+                                ${userChoice === 'B' ? '<div class="selected-check"><i class="fas fa-check"></i></div>' : ''}
+                                <div class="option-letter">B</div>
+                                <div class="option-name">${question.optionB}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Add click handlers
+            container.querySelectorAll('.option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const questionId = this.dataset.id;
+                    const choice = this.dataset.choice;
+                    
+                    // Update UI
+                    const questionCard = this.closest('.question-card');
+                    questionCard.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                        opt.querySelector('.selected-check')?.remove();
+                    });
+                    
+                    this.classList.add('selected');
+                    
+                    const checkMark = document.createElement('div');
+                    checkMark.className = 'selected-check';
+                    checkMark.innerHTML = '<i class="fas fa-check"></i>';
+                    this.appendChild(checkMark);
+                    
+                    // Update state
+                    userVotes[questionId] = choice;
+                    saveUserData();
+                    
+                    // Remove from active questions
+                    activeQuestions = activeQuestions.filter(q => q.id !== questionId);
+                    
+                    // Update finish button
+                    updateFinishButton();
+                });
+            });
+            
+            updateFinishButton();
+        }
+
+        function updateFinishButton() {
+            const finishBtn = document.getElementById('finishVotingBtn');
+            const unanswered = activeQuestions.length;
+            finishBtn.disabled = unanswered > 0;
+            
+            if (unanswered > 0) {
+                finishBtn.innerHTML = `<i class="fas fa-check-circle"></i> FINISH (${unanswered} left)`;
+            } else {
+                finishBtn.innerHTML = `<i class="fas fa-check-circle"></i> FINISH`;
+            }
+        }
+
+        document.getElementById('closeVoting').addEventListener('click', () => {
+            if (confirm('Cancel voting? Your progress will be saved.')) {
+                saveUserData();
+                showMainView();
+            }
+        });
+
+        document.getElementById('finishVotingBtn').addEventListener('click', async () => {
+            try {
+                setLoading(true);
+                
+                // Save votes to Firebase
+                for (const [questionId, choice] of Object.entries(userVotes)) {
+                    if (!allQuestions[questionId]) continue;
+                    
+                    const voteId = `vote_${Date.now()}_${currentUser.replace(/\s+/g, '_')}_${questionId}`;
+                    const voteRef = ref(database, `votes/${voteId}`);
+                    
+                    await set(voteRef, {
+                        userName: currentUser,
+                        questionId: questionId,
+                        choice: choice,
+                        timestamp: Date.now()
+                    });
+                    
+                    // Update question vote count
+                    const questionRef = ref(database, `questions/${questionId}/votes/${choice}`);
+                    const snapshot = await get(questionRef);
+                    const currentCount = snapshot.exists() ? snapshot.val() : 0;
+                    await set(questionRef, currentCount + 1);
+                }
+                
+                // Clear active questions
+                activeQuestions = [];
+                
+                // Show main view
+                showMainView();
+                
+                showNotification('Your votes have been saved!', 'success');
+                setLoading(false);
+                
+            } catch (error) {
+                console.error('Error saving votes:', error);
+                showNotification('Failed to save votes. Please try again.', 'error');
+                setLoading(false);
+            }
+        });
+
+        // ===== MAIN VIEW =====
+        function showMainView() {
+            showView('mainView');
+            
+            // Update user display
+            document.getElementById('displayUserName').textContent = currentUser;
+            document.getElementById('userAvatar').textContent = currentUser.charAt(0).toUpperCase();
+            
+            // Load components
+            loadAIAnalyticsBoxes();
+            loadQuestionSelector();
+            loadCurrentQuestionResults();
+        }
+
+        async function loadAIAnalyticsBoxes() {
+            try {
+                const questionsRef = ref(database, 'questions');
+                const snapshot = await get(questionsRef);
+                
+                if (!snapshot.exists()) {
+                    document.getElementById('aiBoxes').innerHTML = `
+                        <div style="padding: 40px; text-align: center; color: #8e8e93;">
+                            No analytics data
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const questions = snapshot.val();
+                const now = Date.now();
+                
+                // Get active questions
+                const activeQuestions = Object.values(questions)
+                    .filter(q => !q.expiryTime || q.expiryTime > now)
+                    .slice(0, 10);
+                
+                if (activeQuestions.length === 0) {
+                    document.getElementById('aiBoxes').innerHTML = `
+                        <div style="padding: 40px; text-align: center; color: #8e8e93;">
+                            No active questions
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let boxesHtml = '';
+                activeQuestions.forEach(question => {
+                    const votesA = question.votes?.A || 0;
+                    const votesB = question.votes?.B || 0;
+                    const total = votesA + votesB;
+                    const percent = total > 0 ? Math.round(Math.max(votesA, votesB) / total * 100) : 0;
+                    
+                    const shortName = getShortName(question.optionA, question.optionB);
+                    
+                    boxesHtml += `
+                        <div class="ai-box" data-question-id="${question.id}">
+                            <div class="box-shortname">${shortName}</div>
+                            <div class="box-percent">${percent}%</div>
+                        </div>
+                    `;
+                });
+                
+                // Duplicate for seamless animation
+                document.getElementById('aiBoxes').innerHTML = boxesHtml + boxesHtml;
+                
+            } catch (error) {
+                console.error('Error loading AI analytics:', error);
+            }
+        }
+
+        function getShortName(optionA, optionB) {
+            const wordsA = optionA.split(' ').slice(0, 2);
+            const wordsB = optionB.split(' ').slice(0, 2);
+            const firstLetters = [...wordsA, ...wordsB]
+                .map(word => word.charAt(0).toUpperCase())
+                .join('');
+            return firstLetters.substring(0, 3);
+        }
+
+        document.getElementById('openAnalytics').addEventListener('click', async () => {
+            await openAnalyticsModal();
+        });
+
+        async function openAnalyticsModal() {
+            try {
+                const questionsRef = ref(database, 'questions');
+                const snapshot = await get(questionsRef);
+                
+                if (!snapshot.exists()) {
+                    showNotification('No questions available', 'info');
+                    return;
+                }
+                
+                const questions = snapshot.val();
+                const now = Date.now();
+                
+                // Get active questions sorted by creation date
+                analyticsQuestions = Object.values(questions)
+                    .filter(q => !q.expiryTime || q.expiryTime > now)
+                    .sort((a, b) => b.createdAt - a.createdAt);
+                
+                if (analyticsQuestions.length === 0) {
+                    showNotification('No active questions', 'info');
+                    return;
+                }
+                
+                currentAnalyticsIndex = 0;
+                document.getElementById('aiModal').classList.add('active');
+                await loadAnalyticsQuestion(currentAnalyticsIndex);
+                
+            } catch (error) {
+                console.error('Error opening analytics:', error);
+                showNotification('Failed to load analytics', 'error');
+            }
+        }
+
+        async function loadAnalyticsQuestion(index) {
+            if (index < 0 || index >= analyticsQuestions.length) return;
+            
+            currentAnalyticsIndex = index;
+            const question = analyticsQuestions[index];
+            
+            // Update question title
+            document.getElementById('currentAnalyticsQuestion').textContent = 
+                `${question.optionA} vs ${question.optionB}`;
+            
+            // Load analytics data
+            const votesRef = ref(database, 'votes');
+            const votesSnapshot = await get(votesRef);
+            const allVotes = votesSnapshot.exists() ? votesSnapshot.val() : {};
+            
+            const questionVotes = Object.values(allVotes).filter(v => v.questionId === question.id);
+            const votesA = questionVotes.filter(v => v.choice === 'A');
+            const votesB = questionVotes.filter(v => v.choice === 'B');
+            const totalVotes = votesA.length + votesB.length;
+            
+            const percentA = totalVotes > 0 ? Math.round((votesA.length / totalVotes) * 100) : 0;
+            const percentB = totalVotes > 0 ? Math.round((votesB.length / totalVotes) * 100) : 0;
+            
+            // Generate analytics content
+            let contentHtml = `
+                <div class="analytics-section">
+                    <div class="section-title">
+                        <i class="fas fa-chart-bar"></i> Voting Distribution
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-bar">
+                            <div class="chart-fill" style="width: ${percentA}%; background: #007aff;"></div>
+                            <div class="chart-label">A: ${question.optionA}</div>
+                            <div class="chart-value">${percentA}%</div>
+                        </div>
+                        <div class="chart-bar">
+                            <div class="chart-fill" style="width: ${percentB}%; background: #ff3b30;"></div>
+                            <div class="chart-label">B: ${question.optionB}</div>
+                            <div class="chart-value">${percentB}%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analytics-section">
+                    <div class="section-title">
+                        <i class="fas fa-users"></i> User Decisions
+                    </div>
+                    <div class="users-list">
+            `;
+            
+            // Add top 10 voters
+            questionVotes.slice(0, 10).forEach(vote => {
+                contentHtml += `
+                    <div class="user-item">
+                        <div class="user-choice ${vote.choice === 'A' ? 'choice-a' : 'choice-b'}">
+                            ${vote.choice}
+                        </div>
+                        <div>${vote.userName}</div>
+                    </div>
+                `;
+            });
+            
+            if (questionVotes.length > 10) {
+                contentHtml += `
+                    <div style="text-align: center; padding: 12px; color: #8e8e93;">
+                        +${questionVotes.length - 10} more voters
+                    </div>
+                `;
+            }
+            
+            contentHtml += `
+                    </div>
+                </div>
+                
+                <div class="analytics-section">
+                    <div class="section-title">
+                        <i class="fas fa-brain"></i> Advanced Insights
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value">${Math.max(percentA, percentB)}%</div>
+                            <div class="stat-label">Community Agreement</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${Math.abs(percentA - percentB) < 20 ? 'High' : 'Low'}</div>
+                            <div class="stat-label">Controversy Level</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${totalVotes}</div>
+                            <div class="stat-label">Total Votes</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${Math.floor(Math.random() * 30) + 5}s</div>
+                            <div class="stat-label">Avg Decision Time</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('analyticsContent').innerHTML = contentHtml;
+            
+            // Update navigation buttons
+            document.getElementById('prevQuestion').disabled = index === 0;
+            document.getElementById('nextQuestion').disabled = index === analyticsQuestions.length - 1;
+        }
+
+        document.getElementById('prevQuestion').addEventListener('click', () => {
+            if (currentAnalyticsIndex > 0) {
+                loadAnalyticsQuestion(currentAnalyticsIndex - 1);
+            }
+        });
+
+        document.getElementById('nextQuestion').addEventListener('click', () => {
+            if (currentAnalyticsIndex < analyticsQuestions.length - 1) {
+                loadAnalyticsQuestion(currentAnalyticsIndex + 1);
+            }
+        });
+
+        document.getElementById('closeAiModal').addEventListener('click', () => {
+            document.getElementById('aiModal').classList.remove('active');
+        });
+
+        // ===== QUESTION SELECTOR =====
+        async function loadQuestionSelector() {
+            try {
+                const questionsRef = ref(database, 'questions');
+                const snapshot = await get(questionsRef);
+                
+                if (!snapshot.exists()) {
+                    document.getElementById('questionsList').innerHTML = `
+                        <div style="padding: 40px; text-align: center; color: #8e8e93;">
+                            No questions available
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const questions = snapshot.val();
+                const now = Date.now();
+                
+                // Get active questions sorted by creation date
+                const activeQuestions = Object.values(questions)
+                    .filter(q => !q.expiryTime || q.expiryTime > now)
+                    .sort((a, b) => b.createdAt - a.createdAt);
+                
+                if (activeQuestions.length === 0) {
+                    document.getElementById('questionsList').innerHTML = `
+                        <div style="padding: 40px; text-align: center; color: #8e8e93;">
+                            No active questions
+                        </div>
+                    `;
+                    return;
+                }
+                
+                let listHtml = '';
+                activeQuestions.forEach((question, index) => {
+                    const date = new Date(question.createdAt);
+                    const dateStr = date.toLocaleDateString();
+                    const isSelected = index === 0;
+                    
+                    if (isSelected) {
+                        currentQuestionId = question.id;
+                    }
+                    
+                    listHtml += `
+                        <div class="question-item ${isSelected ? 'selected' : ''}" 
+                             data-question-id="${question.id}">
+                            <div class="question-preview">${question.optionA} vs ${question.optionB}</div>
+                            <div class="question-date">${dateStr}</div>
+                        </div>
+                    `;
+                });
+                
+                document.getElementById('questionsList').innerHTML = listHtml;
+                
+                // Add click handlers
+                document.querySelectorAll('.question-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const questionId = this.dataset.questionId;
+                        
+                        // Update selection
+                        document.querySelectorAll('.question-item').forEach(i => {
+                            i.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                        
+                        // Load results for this question
+                        currentQuestionId = questionId;
+                        loadCurrentQuestionResults();
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading question selector:', error);
+            }
+        }
+
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const items = document.querySelectorAll('.question-item');
+            
+            items.forEach(item => {
+                const text = item.querySelector('.question-preview').textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // ===== RESULTS TABLE =====
+        async function loadCurrentQuestionResults() {
+            try {
+                // Get question details
+                const questionRef = ref(database, `questions/${currentQuestionId}`);
+                const questionSnapshot = await get(questionRef);
+                
+                if (!questionSnapshot.exists()) {
+                    clearResultsTable();
+                    return;
+                }
+                
+                const question = questionSnapshot.val();
+                
+                // Update table headers
+                document.getElementById('optionAHeader').textContent = question.optionA;
+                document.getElementById('optionBHeader').textContent = question.optionB;
+                
+                // Get votes for this question
+                const votesRef = ref(database, 'votes');
+                const votesSnapshot = await get(votesRef);
+                
+                if (!votesSnapshot.exists()) {
+                    clearResultsTable();
+                    return;
+                }
+                
+                const allVotes = votesSnapshot.val();
+                const questionVotes = Object.values(allVotes).filter(v => v.questionId === currentQuestionId);
+                
+                const votesA = questionVotes.filter(v => v.choice === 'A');
+                const votesB = questionVotes.filter(v => v.choice === 'B');
+                
+                updateResultsTable(votesA, votesB);
+                
+            } catch (error) {
+                console.error('Error loading results:', error);
+                clearResultsTable();
+            }
+        }
+
+        function updateResultsTable(votesA, votesB) {
+            const tableBody = document.getElementById('tableBody');
+            
+            let tableHtml = '';
+            const maxRows = Math.max(votesA.length, votesB.length);
+            
+            for (let i = 0; i < maxRows; i++) {
+                const voterA = votesA[i];
+                const voterB = votesB[i];
+                
+                tableHtml += `
+                    <tr>
+                        <td class="user-name-cell ${voterA?.userName === currentUser ? 'you' : ''}">
+                            ${voterA ? voterA.userName : ''}
+                        </td>
+                        <td>${!voterA && !voterB ? '???' : ''}</td>
+                        <td class="user-name-cell ${voterB?.userName === currentUser ? 'you' : ''}">
+                            ${voterB ? voterB.userName : ''}
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            // Add summary row
+            tableHtml += `
+                <tr style="background: #f8f9fa; font-weight: 700;">
+                    <td class="choice-a">${votesA.length} votes</td>
+                    <td>TOTAL</td>
+                    <td class="choice-b">${votesB.length} votes</td>
+                </tr>
+            `;
+            
+            tableBody.innerHTML = tableHtml;
+        }
+
+        function clearResultsTable() {
+            document.getElementById('tableBody').innerHTML = `
+                <tr>
+                    <td colspan="3" style="padding: 40px; text-align: center; color: #8e8e93;">
+                        No votes for this question
+                    </td>
+                </tr>
+            `;
+        }
+
+        // ===== LOGOUT =====
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            if (confirm('Are you sure you want to logout?')) {
+                clearUserData();
+                showView('loginView');
+                document.getElementById('userName').value = '';
+                document.getElementById('adminPasswordContainer').classList.remove('show');
+                showNotification('Logged out successfully', 'success');
+            }
+        });
+
+        // ===== ADMIN VIEW =====
+        document.getElementById('adminBack').addEventListener('click', () => {
+            showView('loginView');
+            document.getElementById('userName').value = '';
+            document.getElementById('adminPasswordContainer').classList.remove('show');
+        });
+
+        // Duration selection
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.duration-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                selectedDuration = parseInt(this.dataset.hours);
+            });
+        });
+
+        async function loadAdminQuestions() {
+            try {
+                const questionsRef = ref(database, 'questions');
+                const snapshot = await get(questionsRef);
+                
+                const container = document.getElementById('adminQuestionsList');
+                
+                if (!snapshot.exists()) {
+                    container.innerHTML = `
+                        <div style="padding: 20px; text-align: center; color: #8e8e93;">
+                            No questions added yet
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const questions = snapshot.val();
+                const now = Date.now();
+                
+                let html = '';
+                Object.values(questions)
+                    .sort((a, b) => b.createdAt - a.createdAt)
+                    .forEach(question => {
+                        const isExpired = question.expiryTime && question.expiryTime < now;
+                        const timeLeft = formatTimeLeft(question.expiryTime);
+                        
+                        const votesA = question.votes?.A || 0;
+                        const votesB = question.votes?.B || 0;
+                        
+                        html += `
+                            <div class="admin-item">
+                                <div class="item-info">
+                                    <div class="item-title">
+                                        #${question.number}: ${question.optionA} vs ${question.optionB}
+                                    </div>
+                                    <div class="item-meta">
+                                        <span>Votes: ${votesA + votesB}</span>
+                                        <span>${timeLeft}</span>
+                                        ${isExpired ? '<span style="color: #ff3b30;">EXPIRED</span>' : ''}
+                                    </div>
+                                </div>
+                                <button class="delete-item-btn" data-question-id="${question.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                
+                container.innerHTML = html;
+                
+                // Add delete handlers
+                container.querySelectorAll('.delete-item-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const questionId = e.currentTarget.dataset.questionId;
+                        if (confirm('Delete this question? All votes will also be deleted.')) {
+                            try {
+                                setLoading(true);
+                                
+                                // Delete question
+                                const questionRef = ref(database, `questions/${questionId}`);
+                                await remove(questionRef);
+                                
+                                // Delete votes for this question
+                                const votesRef = ref(database, 'votes');
+                                const votesSnapshot = await get(votesRef);
+                                
+                                if (votesSnapshot.exists()) {
+                                    const votes = votesSnapshot.val();
+                                    const deletePromises = Object.entries(votes)
+                                        .filter(([_, vote]) => vote.questionId === questionId)
+                                        .map(([voteId, _]) => remove(ref(database, `votes/${voteId}`)));
+                                    
+                                    await Promise.all(deletePromises);
+                                }
+                                
+                                // Remove from user's local votes
+                                if (userVotes[questionId]) {
+                                    delete userVotes[questionId];
+                                    saveUserData();
+                                }
+                                
+                                await loadAdminQuestions();
+                                showNotification('Question deleted successfully', 'success');
+                                setLoading(false);
+                                
+                            } catch (error) {
+                                console.error('Error deleting question:', error);
+                                showNotification('Failed to delete question', 'error');
+                                setLoading(false);
+                            }
+                        }
+                    });
+                });
+                
+            } catch (error) {
+                console.error('Error loading admin questions:', error);
+                showNotification('Failed to load questions', 'error');
+            }
+        }
+
+        document.getElementById('addQuestionBtn').addEventListener('click', async () => {
+            try {
+                setLoading(true);
+                
+                const number = document.getElementById('adminQuestionNumber').value.trim();
+                const optionA = document.getElementById('adminOptionA').value.trim();
+                const optionB = document.getElementById('adminOptionB').value.trim();
+                
+                if (!number || !optionA || !optionB) {
+                    showNotification('Please fill all fields', 'error');
+                    setLoading(false);
+                    return;
+                }
+                
+                const questionId = `q_${Date.now()}`;
+                const questionRef = ref(database, `questions/${questionId}`);
+                const expiryTime = Date.now() + (selectedDuration * 60 * 60 * 1000);
+                
+                await set(questionRef, {
+                    id: questionId,
+                    number: parseInt(number),
+                    optionA: optionA,
+                    optionB: optionB,
+                    votes: { A: 0, B: 0 },
+                    createdAt: Date.now(),
+                    expiryTime: expiryTime,
+                    durationHours: selectedDuration
+                });
+                
+                // Clear form
+                document.getElementById('adminQuestionNumber').value = '';
+                document.getElementById('adminOptionA').value = '';
+                document.getElementById('adminOptionB').value = '';
+                
+                await loadAdminQuestions();
+                showNotification('Question added successfully!', 'success');
+                setLoading(false);
+                
+            } catch (error) {
+                console.error('Error adding question:', error);
+                showNotification('Failed to add question', 'error');
+                setLoading(false);
+            }
+        });
+
+        document.getElementById('clearAllBtn').addEventListener('click', async () => {
+            if (!confirm('⚠️ DELETE ALL DATA?\nThis will remove ALL questions and votes!\nThis action cannot be undone.')) return;
+            
+            try {
+                setLoading(true);
+                
+                const questionsRef = ref(database, 'questions');
+                const votesRef = ref(database, 'votes');
+                
+                await Promise.all([
+                    remove(questionsRef),
+                    remove(votesRef)
+                ]);
+                
+                // Clear local user votes
+                userVotes = {};
+                saveUserData();
+                
+                await loadAdminQuestions();
+                showNotification('All data cleared successfully', 'success');
+                setLoading(false);
+                
+            } catch (error) {
+                console.error('Error clearing all data:', error);
+                showNotification('Failed to clear data', 'error');
+                setLoading(false);
+            }
+        });
+
+        // ===== UTILITY FUNCTIONS =====
+        function formatTimeLeft(timestamp) {
+            if (!timestamp) return 'No expiry';
+            const now = Date.now();
+            const diff = timestamp - now;
+            if (diff <= 0) return 'Expired';
+            
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(hours / 24);
+            
+            if (days > 0) return `${days}d ${hours % 24}h left`;
+            if (hours > 0) return `${hours}h left`;
+            return '<1h left';
+        }
+
+        // ===== INITIALIZATION =====
+        loadUserData();
+
+        // Auto-check for new questions
+        setInterval(async () => {
+            if (isAdmin || !currentUser) return;
+            
+            try {
+                const questionsRef = ref(database, 'questions');
+                const snapshot = await get(questionsRef);
+                
+                if (!snapshot.exists()) return;
+                
+                const questions = snapshot.val();
+                const now = Date.now();
+                
+                // Check for new unanswered questions
+                const unansweredQuestions = Object.entries(questions)
+                    .filter(([id, q]) => {
+                        if (q.expiryTime && q.expiryTime <= now) return false;
+                        return !userVotes[id];
+                    })
+                    .map(([id, q]) => ({ id, ...q }));
+                
+                // If user is on main view and there are new questions
+                if (unansweredQuestions.length > 0 && 
+                    document.getElementById('mainView').classList.contains('active')) {
+                    
+                    allQuestions = questions;
+                    activeQuestions = unansweredQuestions;
+                    showView('votingView');
+                    loadVotingQuestions();
+                    showNotification('New questions available!', 'info');
+                }
+                
+            } catch (error) {
+                console.error('Error checking for new questions:', error);
+            }
+        }, 30000); // Check every 30 seconds
+
+        console.log('HERO SPORTS loaded successfully!');
+    </script>
+</body>
+</html>
