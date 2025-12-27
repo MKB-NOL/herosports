@@ -3,12 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Room - Free Voice Conference</title>
+    <title>Audio Room - Professional Voice Conference</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.11.0/simplepeer.min.js"></script>
     <style>
         /* CSS Styles */
         :root {
@@ -22,6 +18,8 @@
             --dark: #212529;
             --gray: #6c757d;
             --gray-light: #e9ecef;
+            --speaking-color: #00ff88;
+            --listening-color: #4cc9f0;
         }
 
         * {
@@ -35,6 +33,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            overflow-x: hidden;
         }
 
         .hidden {
@@ -47,24 +46,40 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             color: white;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             z-index: 1000;
+            gap: 20px;
         }
 
-        /* Container Styles */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Container */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background: white;
+            background: rgba(255, 255, 255, 0.98);
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
             overflow: hidden;
             min-height: 90vh;
+            backdrop-filter: blur(10px);
         }
 
         /* Header */
@@ -75,6 +90,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
         }
 
         .logo {
@@ -95,21 +111,52 @@
             gap: 20px;
         }
 
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         .user-badge {
             background: rgba(255, 255, 255, 0.2);
             padding: 8px 16px;
             border-radius: 20px;
             font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .owner-badge {
-            background: var(--warning);
+            background: linear-gradient(135deg, var(--warning), #ff9e00);
             color: var(--dark);
         }
 
         .admin-badge {
-            background: var(--success);
+            background: linear-gradient(135deg, var(--success), #00b4d8);
+            color: white;
+        }
+
+        .speaker-badge {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
             color: var(--dark);
+        }
+
+        .audience-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
         }
 
         /* Main Content */
@@ -120,49 +167,104 @@
 
         /* Sidebar */
         .sidebar {
-            width: 300px;
-            background: var(--light);
-            padding: 20px;
+            width: 320px;
+            background: linear-gradient(180deg, var(--light) 0%, #f1f3f9 100%);
+            padding: 25px;
             border-right: 1px solid var(--gray-light);
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-size: 1.1rem;
         }
 
         .participants-list {
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .participant-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px;
+            padding: 15px;
             background: white;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .participant-item.speaking {
+            border-color: var(--speaking-color);
+            box-shadow: 0 2px 12px rgba(0, 255, 136, 0.2);
+        }
+
+        .participant-item.owner {
+            border-left: 4px solid var(--warning);
+        }
+
+        .participant-item.admin {
+            border-left: 4px solid var(--success);
         }
 
         .participant-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            flex: 1;
         }
 
-        .speaker-indicator {
-            width: 12px;
-            height: 12px;
-            background: var(--success);
+        .participant-avatar {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            animation: pulse 2s infinite;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .participant-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .participant-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .participant-role {
+            font-size: 0.8rem;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .participant-actions {
             display: flex;
-            gap: 5px;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .participant-item:hover .participant-actions {
+            opacity: 1;
         }
 
         .btn {
@@ -174,12 +276,21 @@
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            font-size: 0.9rem;
         }
 
         .btn-sm {
-            padding: 4px 8px;
-            font-size: 0.8rem;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            justify-content: center;
+            border-radius: 50%;
         }
 
         .btn-primary {
@@ -189,6 +300,7 @@
 
         .btn-primary:hover {
             background: var(--primary-dark);
+            transform: translateY(-2px);
         }
 
         .btn-danger {
@@ -196,14 +308,34 @@
             color: white;
         }
 
+        .btn-danger:hover {
+            background: #e1156d;
+            transform: translateY(-2px);
+        }
+
         .btn-success {
             background: var(--success);
             color: var(--dark);
         }
 
+        .btn-success:hover {
+            background: #00b4d8;
+            transform: translateY(-2px);
+        }
+
         .btn-warning {
             background: var(--warning);
             color: var(--dark);
+        }
+
+        .btn-warning:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+        }
+
+        .btn-muted {
+            background: var(--gray);
+            color: white;
         }
 
         /* Main Area */
@@ -215,147 +347,319 @@
         }
 
         /* Speakers Grid */
+        .speakers-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
         .speakers-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
             margin-bottom: 30px;
         }
 
         .speaker-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, white, #f8f9ff);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
             text-align: center;
             position: relative;
             border: 3px solid transparent;
             transition: all 0.3s;
+            overflow: hidden;
         }
 
-        .speaker-card.active {
-            border-color: var(--success);
-            box-shadow: 0 5px 20px rgba(76, 201, 240, 0.3);
+        .speaker-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .speaker-card.speaking::before {
+            opacity: 1;
+        }
+
+        .speaker-card.speaking {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(76, 201, 240, 0.3);
         }
 
         .speaker-avatar {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 50%;
-            margin: 0 auto 15px;
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: bold;
+            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+            position: relative;
+        }
+
+        .speaker-avatar.owner::after {
+            content: '👑';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 1.2rem;
+        }
+
+        .speaker-avatar.admin::after {
+            content: '🛡️';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 1.2rem;
         }
 
         .speaker-name {
-            font-weight: 600;
-            margin-bottom: 5px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
         }
 
         .speaker-role {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--gray);
-            margin-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .audio-visualizer {
             width: 100%;
-            height: 4px;
+            height: 6px;
             background: var(--gray-light);
-            border-radius: 2px;
-            margin-top: 10px;
+            border-radius: 3px;
+            margin-top: 20px;
             overflow: hidden;
+            position: relative;
         }
 
         .audio-level {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, var(--success), #4cc9f0);
-            border-radius: 2px;
-            transition: width 0.1s;
+            background: linear-gradient(90deg, var(--success), var(--speaking-color));
+            border-radius: 3px;
+            transition: width 0.05s linear;
         }
 
         /* Controls */
-        .controls {
+        .controls-container {
             margin-top: auto;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding-top: 20px;
+            padding-top: 30px;
             border-top: 1px solid var(--gray-light);
         }
 
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
         .control-btn {
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             border: none;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-5px) scale(1.05);
         }
 
         .request-btn {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            width: 200px;
-            border-radius: 30px;
-            font-size: 1rem;
+            min-width: 220px;
+            border-radius: 35px;
+            font-size: 1.1rem;
             font-weight: 600;
+            padding: 0 40px;
         }
 
         .request-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.4);
         }
 
         .request-btn.requested {
-            background: var(--warning);
+            background: linear-gradient(135deg, var(--warning), #ff9e00);
+        }
+
+        .request-btn.requested:hover {
+            box-shadow: 0 15px 30px rgba(248, 150, 30, 0.4);
         }
 
         .mute-btn {
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--danger), #e1156d);
             color: white;
         }
 
         .mute-btn:hover {
-            background: #e1156d;
-            transform: scale(1.1);
+            box-shadow: 0 15px 30px rgba(247, 37, 133, 0.4);
+        }
+
+        .mute-btn.muted {
+            background: var(--gray);
         }
 
         .end-call-btn {
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--danger), #e1156d);
             color: white;
-            padding: 15px 30px;
-            border-radius: 30px;
+            padding: 18px 40px;
+            border-radius: 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(247, 37, 133, 0.3);
+        }
+
+        .end-call-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(247, 37, 133, 0.4);
         }
 
         /* Request List */
+        .requests-section {
+            margin-top: 30px;
+        }
+
         .requests-list {
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .request-item {
             background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            padding: 18px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border-left: 4px solid var(--warning);
+        }
+
+        /* Notification System */
+        .notification-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: white;
+            padding: 18px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+            border-left: 5px solid var(--primary);
+        }
+
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
+        .notification-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { opacity: 0; transform: translateX(100%); }
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(114, 9, 183, 0.1));
+            border-radius: 15px;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 5px;
         }
 
         /* Mobile Responsive */
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .main-content {
                 flex-direction: column;
             }
@@ -364,144 +668,228 @@
                 width: 100%;
                 border-right: none;
                 border-bottom: 1px solid var(--gray-light);
+                max-height: 300px;
             }
             
             .speakers-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             }
             
+            .controls {
+                gap: 15px;
+            }
+            
+            .control-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .request-btn {
+                min-width: 200px;
+                padding: 0 30px;
+            }
+        }
+
+        @media (max-width: 576px) {
             .header {
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
             }
             
+            .speakers-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .controls {
-                flex-wrap: wrap;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-btn {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .stats-bar {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
             }
         }
 
-        /* Notification */
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
+        /* Audio Level Animation */
+        @keyframes audioWave {
+            0%, 100% { height: 20%; }
+            25% { height: 60%; }
+            50% { height: 100%; }
+            75% { height: 60%; }
         }
 
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .speaking-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+            border-radius: 20px;
+            animation: pulseGlow 2s infinite;
+            pointer-events: none;
         }
 
-        .notification.success {
-            border-left: 5px solid var(--success);
-        }
-
-        .notification.error {
-            border-left: 5px solid var(--danger);
-        }
-
-        .notification.info {
-            border-left: 5px solid var(--primary);
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
         }
     </style>
 </head>
 <body>
-    <div id="loading">Initializing Audio Room...</div>
+    <!-- Loading Screen -->
+    <div id="loading">
+        <div class="spinner"></div>
+        <div>Initializing Audio Conference...</div>
+        <div style="font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-top: 10px;">
+            Checking microphone permissions
+        </div>
+    </div>
 
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Main Application -->
     <div class="container hidden" id="appContainer">
         <!-- Header -->
         <div class="header">
             <div class="logo">
                 <i class="fas fa-broadcast-tower"></i>
-                <span>Audio Conference</span>
+                <span>Professional Audio Room</span>
             </div>
             <div class="room-info">
-                <div class="user-badge" id="userRoleBadge">Audience</div>
+                <div class="connection-status">
+                    <div class="status-indicator"></div>
+                    <span id="connectionStatus">Connected</span>
+                </div>
+                <div class="user-badge audience-badge" id="userRoleBadge">Audience</div>
                 <div id="participantCount">0 Participants</div>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <!-- Sidebar (Admin/Owner View) -->
+            <!-- Admin Sidebar -->
             <div class="sidebar hidden" id="adminSidebar">
-                <h3><i class="fas fa-users"></i> Participants</h3>
+                <div class="section-title">
+                    <i class="fas fa-users"></i>
+                    <h3>Participants (<span id="participantCountSidebar">0</span>)</h3>
+                </div>
                 <div class="participants-list" id="participantsList">
-                    <!-- Participants will be listed here -->
+                    <!-- Participants populated dynamically -->
                 </div>
 
                 <div class="requests-section hidden" id="requestsSection">
-                    <h3><i class="fas fa-hand-paper"></i> Speaking Requests</h3>
+                    <div class="section-title">
+                        <i class="fas fa-hand-paper"></i>
+                        <h3>Speaking Requests (<span id="requestCount">0</span>)</h3>
+                    </div>
                     <div class="requests-list" id="requestsList">
-                        <!-- Requests will be listed here -->
+                        <div class="empty-state">No pending requests</div>
                     </div>
                 </div>
             </div>
 
             <!-- Main Area -->
             <div class="main-area">
-                <div class="speakers-grid" id="speakersGrid">
-                    <!-- Speaker cards will be added here -->
+                <div class="speakers-container">
+                    <div class="section-title">
+                        <i class="fas fa-microphone"></i>
+                        <h3>Active Speakers (<span id="speakerCount">0</span>)</h3>
+                    </div>
+                    
+                    <div class="speakers-grid" id="speakersGrid">
+                        <!-- Speakers populated dynamically -->
+                    </div>
                 </div>
 
-                <!-- Audience View Controls -->
-                <div class="controls" id="audienceControls">
-                    <button class="btn request-btn" id="requestSpeakBtn">
-                        <i class="fas fa-microphone"></i> Request to Speak
-                    </button>
+                <!-- Stats Bar -->
+                <div class="stats-bar hidden" id="statsBar">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalParticipants">0</div>
+                        <div class="stat-label">Participants</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="activeSpeakers">0</div>
+                        <div class="stat-label">Active Speakers</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="pendingRequests">0</div>
+                        <div class="stat-label">Pending Requests</div>
+                    </div>
                 </div>
 
-                <!-- Admin/Owner Controls -->
-                <div class="controls hidden" id="adminControls">
-                    <button class="btn end-call-btn" id="endCallBtn">
-                        <i class="fas fa-phone-slash"></i> End Call
-                    </button>
+                <!-- Controls -->
+                <div class="controls-container">
+                    <!-- Audience Controls -->
+                    <div class="controls" id="audienceControls">
+                        <button class="control-btn request-btn" id="requestSpeakBtn">
+                            <i class="fas fa-microphone"></i>
+                            <span>Request to Speak</span>
+                        </button>
+                    </div>
+
+                    <!-- Admin Controls -->
+                    <div class="controls hidden" id="adminControls">
+                        <button class="control-btn end-call-btn" id="endCallBtn">
+                            <i class="fas fa-phone-slash"></i>
+                            <span>End Conference</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // JavaScript Application
+    <!-- Firebase and Application Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update, remove, push, onDisconnect } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-database.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyCwqQv8qg5Z9X7X8X8X8X8X8X8X8X8X8X8X8",
-            authDomain: "your-project-id.firebaseapp.com",
-            databaseURL: "https://your-project-id-default-rtdb.firebaseio.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project-id.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef1234567890"
+            apiKey: "AIzaSyAEjkoZ6xNZbNHdW1QDddYrBTVXxHgnIRc",
+            authDomain: "rosine-e-commerce.firebaseapp.com",
+            databaseURL: "https://rosine-e-commerce-default-rtdb.firebaseio.com",
+            projectId: "rosine-e-commerce",
+            storageBucket: "rosine-e-commerce.firebasestorage.app",
+            messagingSenderId: "143638702824",
+            appId: "1:143638702824:web:faa956ee5b50c9766ab75d",
+            measurementId: "G-4CWT0L3Y98"
         };
 
-        // Firebase Initialization
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const auth = firebase.auth();
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const auth = getAuth(app);
 
         // Application State
-        let user = null;
+        const ROOM_ID = 'audio_room_main';
+        let currentUser = null;
+        let currentUserId = null;
         let userRole = 'audience';
-        let userId = null;
-        let roomId = 'audio-room-1';
+        let userData = {};
         let localStream = null;
-        let peers = {};
-        let audioContext = null;
-        let analysers = {};
+        let peers = new Map();
+        let audioAnalyzers = new Map();
         let isRequesting = false;
+        let isMuted = false;
+        let connectionState = 'connecting';
 
         // DOM Elements
         const loadingEl = document.getElementById('loading');
         const appContainer = document.getElementById('appContainer');
+        const notificationContainer = document.getElementById('notificationContainer');
         const adminSidebar = document.getElementById('adminSidebar');
         const adminControls = document.getElementById('adminControls');
         const audienceControls = document.getElementById('audienceControls');
@@ -509,106 +897,262 @@
         const endCallBtn = document.getElementById('endCallBtn');
         const userRoleBadge = document.getElementById('userRoleBadge');
         const participantCount = document.getElementById('participantCount');
+        const participantCountSidebar = document.getElementById('participantCountSidebar');
         const participantsList = document.getElementById('participantsList');
         const requestsList = document.getElementById('requestsList');
         const requestsSection = document.getElementById('requestsSection');
+        const requestCount = document.getElementById('requestCount');
         const speakersGrid = document.getElementById('speakersGrid');
+        const speakerCount = document.getElementById('speakerCount');
+        const statsBar = document.getElementById('statsBar');
+        const totalParticipants = document.getElementById('totalParticipants');
+        const activeSpeakers = document.getElementById('activeSpeakers');
+        const pendingRequests = document.getElementById('pendingRequests');
+        const connectionStatus = document.getElementById('connectionStatus');
+
+        // Notification System
+        function showNotification(title, message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            let icon = 'info-circle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'error') icon = 'exclamation-circle';
+            if (type === 'warning') icon = 'exclamation-triangle';
+            
+            notification.innerHTML = `
+                <div class="notification-icon">
+                    <i class="fas fa-${icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+            `;
+            
+            notificationContainer.appendChild(notification);
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
 
         // Initialize Application
-        async function initApp() {
+        async function initializeApp() {
             try {
                 // Sign in anonymously
-                const authResult = await auth.signInAnonymously();
-                user = authResult.user;
-                userId = user.uid;
+                showNotification('Connecting', 'Authenticating with server...', 'info');
                 
-                // Check if user is owner (first user in room)
-                const roomRef = database.ref(`rooms/${roomId}`);
-                const roomSnapshot = await roomRef.once('value');
+                await signInAnonymously(auth);
                 
-                if (!roomSnapshot.exists()) {
-                    // First user becomes owner
-                    await setUserRole('owner');
-                    await createRoom();
-                } else {
-                    // Check if already in room
-                    const userRef = database.ref(`rooms/${roomId}/participants/${userId}`);
-                    const userSnapshot = await userRef.once('value');
-                    
-                    if (!userSnapshot.exists()) {
-                        await joinRoom();
-                    } else {
-                        // User reconnecting
-                        const userData = userSnapshot.val();
-                        userRole = userData.role;
-                        updateUI();
+                auth.onAuthStateChanged(async (user) => {
+                    if (user) {
+                        currentUser = user;
+                        currentUserId = user.uid;
+                        
+                        await setupRoom();
+                        await setupAudio();
+                        setupFirebaseListeners();
+                        
+                        // Show app
+                        setTimeout(() => {
+                            loadingEl.classList.add('hidden');
+                            appContainer.classList.remove('hidden');
+                            showNotification('Connected', 'Successfully joined the audio room!', 'success');
+                        }, 1000);
                     }
-                }
-                
-                // Set up real-time listeners
-                setupListeners();
-                
-                // Hide loading, show app
-                loadingEl.classList.add('hidden');
-                appContainer.classList.remove('hidden');
+                });
                 
             } catch (error) {
                 console.error('Initialization error:', error);
-                showNotification('Failed to initialize app', 'error');
+                showNotification('Connection Failed', 'Unable to connect to server', 'error');
             }
         }
 
-        // Create Room
-        async function createRoom() {
-            try {
-                await database.ref(`rooms/${roomId}`).set({
+        // Setup Room
+        async function setupRoom() {
+            const roomRef = ref(database, `rooms/${ROOM_ID}`);
+            
+            // Check if room exists
+            const snapshot = await getSnapshot(roomRef);
+            
+            if (!snapshot.exists()) {
+                // Create new room - first user becomes owner
+                await set(roomRef, {
                     created: Date.now(),
-                    active: true,
-                    owner: userId
+                    owner: currentUserId,
+                    status: 'active',
+                    settings: {
+                        maxSpeakers: 3,
+                        requireApproval: true,
+                        autoMute: true
+                    }
                 });
                 
-                await database.ref(`rooms/${roomId}/participants/${userId}`).set({
-                    id: userId,
-                    name: `User_${userId.substring(0, 4)}`,
-                    role: 'owner',
-                    isSpeaking: false,
-                    isMuted: false,
-                    timestamp: Date.now()
-                });
+                userRole = 'owner';
+                await createUserData();
+                showNotification('Room Created', 'You are now the room owner', 'success');
                 
-                showNotification('Room created! You are the owner.', 'success');
-            } catch (error) {
-                console.error('Error creating room:', error);
+            } else {
+                // Join existing room
+                const userRef = ref(database, `rooms/${ROOM_ID}/participants/${currentUserId}`);
+                const userSnapshot = await getSnapshot(userRef);
+                
+                if (!userSnapshot.exists()) {
+                    userRole = 'audience';
+                    await createUserData();
+                    showNotification('Joined Room', 'You are now in the audio room', 'success');
+                } else {
+                    // Reconnecting user
+                    const data = userSnapshot.val();
+                    userRole = data.role;
+                    userData = data;
+                    updateUI();
+                }
             }
+            
+            // Set up disconnect handler
+            setupDisconnectHandler();
         }
 
-        // Join Room
-        async function joinRoom() {
-            try {
-                await database.ref(`rooms/${roomId}/participants/${userId}`).set({
-                    id: userId,
-                    name: `User_${userId.substring(0, 4)}`,
-                    role: 'audience',
-                    isSpeaking: false,
-                    isMuted: false,
-                    timestamp: Date.now()
-                });
-                
-                showNotification('Joined room successfully!', 'success');
-            } catch (error) {
-                console.error('Error joining room:', error);
-            }
+        // Get snapshot helper
+        function getSnapshot(ref) {
+            return new Promise((resolve) => {
+                onValue(ref, (snapshot) => {
+                    resolve(snapshot);
+                }, { onlyOnce: true });
+            });
         }
 
-        // Set User Role
-        async function setUserRole(role) {
-            userRole = role;
-            await database.ref(`rooms/${roomId}/participants/${userId}/role`).set(role);
+        // Create User Data
+        async function createUserData() {
+            const userName = `User_${currentUserId.substring(0, 6)}`;
+            const userRef = ref(database, `rooms/${ROOM_ID}/participants/${currentUserId}`);
+            
+            userData = {
+                id: currentUserId,
+                name: userName,
+                role: userRole,
+                isSpeaking: false,
+                isMuted: false,
+                isOnline: true,
+                joinedAt: Date.now(),
+                lastActive: Date.now()
+            };
+            
+            await set(userRef, userData);
             updateUI();
         }
 
-        // Update UI based on role
-        function updateUI() {
+        // Setup Audio
+        async function setupAudio() {
+            try {
+                // Request microphone permission
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                        sampleRate: 48000,
+                        channelCount: 1
+                    },
+                    video: false
+                });
+                
+                // Apply audio processing
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(localStream);
+                const destination = audioContext.createMediaStreamDestination();
+                source.connect(destination);
+                
+                showNotification('Audio Ready', 'Microphone access granted', 'success');
+                
+            } catch (error) {
+                console.error('Audio setup error:', error);
+                showNotification('Microphone Access Required', 'Please allow microphone access to participate', 'error');
+            }
+        }
+
+        // Setup Firebase Listeners
+        function setupFirebaseListeners() {
+            // Listen to participants
+            const participantsRef = ref(database, `rooms/${ROOM_ID}/participants`);
+            onValue(participantsRef, (snapshot) => {
+                updateParticipants(snapshot.val());
+            });
+            
+            // Listen to speaking requests
+            const requestsRef = ref(database, `rooms/${ROOM_ID}/requests`);
+            onValue(requestsRef, (snapshot) => {
+                updateRequests(snapshot.val());
+            });
+            
+            // Listen to signaling data
+            const signalingRef = ref(database, `rooms/${ROOM_ID}/signaling/${currentUserId}`);
+            onValue(signalingRef, (snapshot) => {
+                handleSignaling(snapshot.val());
+            });
+            
+            // Listen to room status
+            const roomRef = ref(database, `rooms/${ROOM_ID}`);
+            onValue(roomRef, (snapshot) => {
+                const room = snapshot.val();
+                if (room && room.status === 'ended') {
+                    handleRoomEnded();
+                }
+            });
+        }
+
+        // Setup Disconnect Handler
+        function setupDisconnectHandler() {
+            const userRef = ref(database, `rooms/${ROOM_ID}/participants/${currentUserId}`);
+            const disconnectRef = onDisconnect(userRef);
+            disconnectRef.remove();
+            
+            // Update online status when leaving
+            window.addEventListener('beforeunload', async () => {
+                await remove(userRef);
+                cleanupConnections();
+            });
+        }
+
+        // Update Participants
+        function updateParticipants(participants) {
+            if (!participants) {
+                participants = {};
+            }
+            
+            const participantsArray = Object.values(participants);
+            
+            // Update counters
+            const total = participantsArray.length;
+            const speakers = participantsArray.filter(p => 
+                (p.role === 'speaker' || p.role === 'owner' || p.role === 'admin') && !p.isMuted
+            ).length;
+            
+            totalParticipants.textContent = total;
+            activeSpeakers.textContent = speakers;
+            participantCount.textContent = `${total} Participants`;
+            participantCountSidebar.textContent = total;
+            
+            // Update UI based on role
+            updateUIBasedOnRole();
+            
+            // Update participants list
+            updateParticipantsList(participantsArray);
+            
+            // Update speakers grid
+            updateSpeakersGrid(participantsArray);
+            
+            // Update stats bar
+            statsBar.classList.remove('hidden');
+        }
+
+        // Update UI Based on Role
+        function updateUIBasedOnRole() {
             // Update badge
             userRoleBadge.textContent = userRole.charAt(0).toUpperCase() + userRole.slice(1);
             userRoleBadge.className = 'user-badge ' + userRole + '-badge';
@@ -627,70 +1171,71 @@
             
             // Update request button
             if (isRequesting) {
-                requestSpeakBtn.innerHTML = '<i class="fas fa-hourglass-half"></i> Request Pending';
+                requestSpeakBtn.innerHTML = `
+                    <i class="fas fa-hourglass-half"></i>
+                    <span>Request Pending</span>
+                `;
                 requestSpeakBtn.classList.add('requested');
             } else {
-                requestSpeakBtn.innerHTML = '<i class="fas fa-microphone"></i> Request to Speak';
+                requestSpeakBtn.innerHTML = `
+                    <i class="fas fa-microphone"></i>
+                    <span>Request to Speak</span>
+                `;
                 requestSpeakBtn.classList.remove('requested');
             }
         }
 
-        // Setup Firebase Listeners
-        function setupListeners() {
-            // Listen for participants
-            database.ref(`rooms/${roomId}/participants`).on('value', (snapshot) => {
-                updateParticipantsList(snapshot.val());
-            });
-            
-            // Listen for speaking requests
-            database.ref(`rooms/${roomId}/requests`).on('value', (snapshot) => {
-                updateRequestsList(snapshot.val());
-            });
-            
-            // Listen for WebRTC offers
-            database.ref(`rooms/${roomId}/signaling/${userId}`).on('value', (snapshot) => {
-                handleSignaling(snapshot.val());
-            });
-        }
-
         // Update Participants List
         function updateParticipantsList(participants) {
-            if (!participants) return;
-            
-            const participantArray = Object.values(participants);
-            participantCount.textContent = `${participantArray.length} Participants`;
-            
-            // Update admin list
             participantsList.innerHTML = '';
-            participantArray.forEach(participant => {
+            
+            participants.forEach(participant => {
                 const item = document.createElement('div');
-                item.className = 'participant-item';
+                item.className = `participant-item ${participant.role} ${participant.isSpeaking ? 'speaking' : ''}`;
+                
+                let actions = '';
+                if ((userRole === 'owner' || userRole === 'admin') && participant.id !== currentUserId) {
+                    actions = `
+                        <div class="participant-actions">
+                            ${participant.role === 'speaker' ? `
+                                <button class="btn btn-sm ${participant.isMuted ? 'btn-success' : 'btn-muted'}" 
+                                        onclick="toggleMute('${participant.id}')">
+                                    <i class="fas fa-${participant.isMuted ? 'microphone' : 'microphone-slash'}"></i>
+                                </button>
+                            ` : ''}
+                            ${participant.role !== 'owner' ? `
+                                <button class="btn btn-sm btn-danger" onclick="removeParticipant('${participant.id}')">
+                                    <i class="fas fa-user-slash"></i>
+                                </button>
+                            ` : ''}
+                            ${(userRole === 'owner' && participant.role === 'audience') ? `
+                                <button class="btn btn-sm btn-warning" onclick="makeAdmin('${participant.id}')">
+                                    <i class="fas fa-user-shield"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+                
                 item.innerHTML = `
                     <div class="participant-info">
-                        ${participant.isSpeaking ? '<div class="speaker-indicator"></div>' : ''}
-                        <span>${participant.name}</span>
-                        <span class="participant-role">(${participant.role})</span>
+                        <div class="participant-avatar">
+                            ${participant.name.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div class="participant-details">
+                            <div class="participant-name">${participant.name}</div>
+                            <div class="participant-role">
+                                <i class="fas fa-${getRoleIcon(participant.role)}"></i>
+                                ${participant.role.charAt(0).toUpperCase() + participant.role.slice(1)}
+                                ${participant.isSpeaking ? '• <span style="color: var(--speaking-color);">Speaking</span>' : ''}
+                            </div>
+                        </div>
                     </div>
-                    <div class="participant-actions">
-                        ${(userRole === 'owner' || userRole === 'admin') && participant.role === 'speaker' ? 
-                            `<button class="btn btn-sm btn-danger" onclick="muteParticipant('${participant.id}')">
-                                <i class="fas fa-microphone-slash"></i>
-                            </button>` : ''}
-                        ${(userRole === 'owner' || userRole === 'admin') && participant.id !== userId ? 
-                            `<button class="btn btn-sm btn-danger" onclick="removeParticipant('${participant.id}')">
-                                <i class="fas fa-user-slash"></i>
-                            </button>` : ''}
-                        ${(userRole === 'owner' || userRole === 'admin') && participant.role === 'audience' ? 
-                            `<button class="btn btn-sm btn-success" onclick="makeAdmin('${participant.id}')">
-                                <i class="fas fa-user-shield"></i>
-                            </button>` : ''}
-                    </div>
+                    ${actions}
                 `;
+                
                 participantsList.appendChild(item);
             });
-            
-            // Update speakers grid
-            updateSpeakersGrid(participantArray);
         }
 
         // Update Speakers Grid
@@ -699,13 +1244,17 @@
                 p.role === 'speaker' || p.role === 'owner' || p.role === 'admin'
             );
             
+            speakerCount.textContent = speakers.length;
             speakersGrid.innerHTML = '';
+            
             speakers.forEach(speaker => {
                 const card = document.createElement('div');
-                card.className = `speaker-card ${speaker.isSpeaking ? 'active' : ''}`;
+                card.className = `speaker-card ${speaker.isSpeaking ? 'speaking' : ''}`;
+                
                 card.innerHTML = `
-                    <div class="speaker-avatar">
-                        ${speaker.name.substring(0, 2)}
+                    <div class="speaker-avatar ${speaker.role}">
+                        ${speaker.name.substring(0, 2).toUpperCase()}
+                        ${speaker.isSpeaking ? '<div class="speaking-animation"></div>' : ''}
                     </div>
                     <div class="speaker-name">${speaker.name}</div>
                     <div class="speaker-role">
@@ -713,46 +1262,38 @@
                         ${speaker.role.charAt(0).toUpperCase() + speaker.role.slice(1)}
                     </div>
                     <div class="audio-visualizer">
-                        <div class="audio-level" id="audio-level-${speaker.id}"></div>
+                        <div class="audio-level" id="audio-level-${speaker.id}" 
+                             style="width: ${speaker.isSpeaking ? '30%' : '0%'}"></div>
                     </div>
                 `;
-                speakersGrid.appendChild(card);
                 
-                // Update audio level if speaking
-                if (speaker.isSpeaking && analysers[speaker.id]) {
-                    updateAudioLevel(speaker.id);
-                }
+                speakersGrid.appendChild(card);
             });
         }
 
-        // Get Role Icon
-        function getRoleIcon(role) {
-            switch(role) {
-                case 'owner': return 'crown';
-                case 'admin': return 'user-shield';
-                case 'speaker': return 'microphone';
-                default: return 'user';
-            }
-        }
-
-        // Update Requests List
-        function updateRequestsList(requests) {
+        // Update Requests
+        function updateRequests(requests) {
             if (!requests) {
-                requestsList.innerHTML = '<p>No pending requests</p>';
+                requestsList.innerHTML = '<div class="empty-state">No pending requests</div>';
+                requestCount.textContent = '0';
+                pendingRequests.textContent = '0';
                 return;
             }
             
-            const requestArray = Object.values(requests);
+            const requestsArray = Object.values(requests);
+            requestCount.textContent = requestsArray.length;
+            pendingRequests.textContent = requestsArray.length;
+            
             requestsList.innerHTML = '';
             
-            requestArray.forEach(request => {
+            requestsArray.forEach(request => {
                 const item = document.createElement('div');
                 item.className = 'request-item';
                 item.innerHTML = `
                     <div>
                         <strong>${request.userName}</strong>
-                        <div style="font-size: 0.8rem; color: #666;">
-                            Requested to speak
+                        <div style="font-size: 0.85rem; color: var(--gray); margin-top: 4px;">
+                            Requested at ${new Date(request.timestamp).toLocaleTimeString()}
                         </div>
                     </div>
                     <div class="participant-actions">
@@ -768,99 +1309,139 @@
             });
         }
 
-        // Handle Speaking Request
-        async function handleRequest(requestUserId, approve) {
-            if (userRole !== 'owner' && userRole !== 'admin') return;
-            
-            try {
-                if (approve) {
-                    // Update user role to speaker
-                    await database.ref(`rooms/${roomId}/participants/${requestUserId}/role`).set('speaker');
-                    
-                    // Remove request
-                    await database.ref(`rooms/${roomId}/requests/${requestUserId}`).remove();
-                    
-                    // Initialize WebRTC connection for new speaker
-                    if (userRole === 'owner' || userRole === 'admin') {
-                        await initWebRTCForSpeaker(requestUserId);
-                    }
-                    
-                    showNotification('Speaker request approved!', 'success');
-                } else {
-                    // Remove request
-                    await database.ref(`rooms/${roomId}/requests/${requestUserId}`).remove();
-                    showNotification('Speaker request rejected', 'info');
-                }
-            } catch (error) {
-                console.error('Error handling request:', error);
-            }
+        // Get Role Icon
+        function getRoleIcon(role) {
+            const icons = {
+                'owner': 'crown',
+                'admin': 'user-shield',
+                'speaker': 'microphone',
+                'audience': 'user'
+            };
+            return icons[role] || 'user';
         }
 
         // Request to Speak
         async function requestToSpeak() {
-            if (userRole === 'owner' || userRole === 'admin' || userRole === 'speaker') return;
+            if (userRole !== 'audience' || isRequesting) return;
             
             try {
                 isRequesting = true;
-                updateUI();
+                updateUIBasedOnRole();
                 
-                await database.ref(`rooms/${roomId}/requests/${userId}`).set({
-                    userId: userId,
-                    userName: `User_${userId.substring(0, 4)}`,
+                const requestRef = ref(database, `rooms/${ROOM_ID}/requests/${currentUserId}`);
+                await set(requestRef, {
+                    userId: currentUserId,
+                    userName: userData.name,
                     timestamp: Date.now()
                 });
                 
-                showNotification('Speaking request sent to admin', 'info');
+                showNotification('Request Sent', 'Waiting for admin approval to speak', 'info');
             } catch (error) {
-                console.error('Error requesting to speak:', error);
+                console.error('Request error:', error);
                 isRequesting = false;
-                updateUI();
+                updateUIBasedOnRole();
+                showNotification('Error', 'Failed to send request', 'error');
             }
         }
 
-        // Initialize WebRTC for Speaker
-        async function initWebRTCForSpeaker(speakerId) {
-            // Get user's audio stream
+        // Handle Request (Approve/Reject)
+        async function handleRequest(userId, approve) {
+            if (userRole !== 'owner' && userRole !== 'admin') return;
+            
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                    }
-                });
+                const requestRef = ref(database, `rooms/${ROOM_ID}/requests/${userId}`);
+                const userRef = ref(database, `rooms/${ROOM_ID}/participants/${userId}`);
                 
-                // Create peer connection
+                if (approve) {
+                    // Update user role to speaker
+                    await update(userRef, {
+                        role: 'speaker',
+                        isMuted: false
+                    });
+                    
+                    // Remove request
+                    await remove(requestRef);
+                    
+                    // Create WebRTC connection
+                    await createPeerConnection(userId);
+                    
+                    showNotification('Request Approved', 'User is now a speaker', 'success');
+                } else {
+                    // Just remove request
+                    await remove(requestRef);
+                    showNotification('Request Rejected', 'Speaker request denied', 'info');
+                }
+            } catch (error) {
+                console.error('Handle request error:', error);
+                showNotification('Error', 'Failed to process request', 'error');
+            }
+        }
+
+        // Create Peer Connection
+        async function createPeerConnection(peerId) {
+            try {
+                if (peers.has(peerId)) return;
+                
                 const peer = new SimplePeer({
-                    initiator: true,
-                    stream: stream,
+                    initiator: userRole === 'owner' || userRole === 'admin',
+                    stream: localStream,
                     config: {
                         iceServers: [
                             { urls: 'stun:stun.l.google.com:19302' },
-                            { urls: 'stun:global.stun.twilio.com:3478' }
+                            { urls: 'stun:stun1.l.google.com:19302' },
+                            { urls: 'stun:stun2.l.google.com:19302' },
+                            { urls: 'stun:stun3.l.google.com:19302' },
+                            { urls: 'stun:stun4.l.google.com:19302' }
                         ]
                     }
                 });
                 
-                peer.on('signal', (data) => {
-                    // Send signaling data to Firebase
-                    database.ref(`rooms/${roomId}/signaling/${speakerId}`).set({
-                        from: userId,
-                        signal: data
+                peer.on('signal', async (data) => {
+                    // Send signaling data via Firebase
+                    const signalingRef = ref(database, `rooms/${ROOM_ID}/signaling/${peerId}`);
+                    await set(signalingRef, {
+                        from: currentUserId,
+                        signal: data,
+                        timestamp: Date.now()
                     });
                 });
                 
                 peer.on('stream', (stream) => {
-                    // Handle incoming stream from speaker
-                    handleRemoteStream(speakerId, stream);
+                    handleRemoteStream(peerId, stream);
                 });
                 
-                peers[speakerId] = peer;
+                peer.on('error', (err) => {
+                    console.error('Peer error:', err);
+                    peers.delete(peerId);
+                });
+                
+                peers.set(peerId, peer);
                 
             } catch (error) {
-                console.error('Error getting audio stream:', error);
-                showNotification('Failed to access microphone', 'error');
+                console.error('Peer creation error:', error);
             }
+        }
+
+        // Handle Signaling
+        async function handleSignaling(data) {
+            if (!data || data.from === currentUserId) return;
+            
+            const peer = peers.get(data.from);
+            if (peer) {
+                peer.signal(data.signal);
+            } else {
+                await createPeerConnection(data.from);
+                setTimeout(() => {
+                    const newPeer = peers.get(data.from);
+                    if (newPeer) newPeer.signal(data.signal);
+                }, 1000);
+            }
+            
+            // Clean up signaling data
+            setTimeout(async () => {
+                const signalingRef = ref(database, `rooms/${ROOM_ID}/signaling/${currentUserId}`);
+                await remove(signalingRef);
+            }, 5000);
         }
 
         // Handle Remote Stream
@@ -871,24 +1452,22 @@
             audio.autoplay = true;
             audio.volume = 0.8;
             
-            // Setup audio analysis for visualizer
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            
+            // Setup audio analyzer for visualizer
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const source = audioContext.createMediaStreamSource(stream);
-            const analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            source.connect(analyser);
+            const analyzer = audioContext.createAnalyser();
+            analyzer.fftSize = 256;
+            source.connect(analyzer);
             
-            analysers[userId] = analyser;
+            audioAnalyzers.set(userId, analyzer);
             
-            // Start updating audio level
-            function updateLevel() {
-                if (!analysers[userId]) return;
+            // Start visualizer animation
+            function updateVisualizer() {
+                const analyzer = audioAnalyzers.get(userId);
+                if (!analyzer) return;
                 
-                const dataArray = new Uint8Array(analyser.frequencyBinCount);
-                analyser.getByteFrequencyData(dataArray);
+                const dataArray = new Uint8Array(analyzer.frequencyBinCount);
+                analyzer.getByteFrequencyData(dataArray);
                 
                 const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
                 const level = Math.min(100, (average / 128) * 100);
@@ -898,188 +1477,210 @@
                     levelEl.style.width = `${level}%`;
                 }
                 
-                requestAnimationFrame(updateLevel);
+                // Update speaking status
+                const isSpeaking = level > 10;
+                updateSpeakingStatus(userId, isSpeaking);
+                
+                requestAnimationFrame(updateVisualizer);
             }
             
-            updateLevel();
-            
-            // Update UI to show user is speaking
-            database.ref(`rooms/${roomId}/participants/${userId}/isSpeaking`).set(true);
+            updateVisualizer();
         }
 
-        // Handle Signaling
-        function handleSignaling(data) {
-            if (!data || data.from === userId) return;
-            
-            const peer = new SimplePeer({
-                initiator: false,
-                stream: localStream,
-                config: {
-                    iceServers: [
-                        { urls: 'stun:stun.l.google.com:19302' },
-                        { urls: 'stun:global.stun.twilio.com:3478' }
-                    ]
-                }
+        // Update Speaking Status
+        async function updateSpeakingStatus(userId, isSpeaking) {
+            const userRef = ref(database, `rooms/${ROOM_ID}/participants/${userId}`);
+            await update(userRef, {
+                isSpeaking: isSpeaking,
+                lastActive: Date.now()
             });
-            
-            peer.on('signal', (signalData) => {
-                database.ref(`rooms/${roomId}/signaling/${data.from}`).set({
-                    from: userId,
-                    signal: signalData
-                });
-            });
-            
-            peer.on('stream', (stream) => {
-                handleRemoteStream(data.from, stream);
-            });
-            
-            peer.signal(data.signal);
-            peers[data.from] = peer;
-            
-            // Clear signaling data
-            setTimeout(() => {
-                database.ref(`rooms/${roomId}/signaling/${userId}`).remove();
-            }, 1000);
         }
 
-        // Mute Participant
-        async function muteParticipant(participantId) {
+        // Toggle Mute
+        async function toggleMute(userId) {
             if (userRole !== 'owner' && userRole !== 'admin') return;
             
             try {
-                const participantRef = database.ref(`rooms/${roomId}/participants/${participantId}`);
-                const snapshot = await participantRef.once('value');
-                const participant = snapshot.val();
+                const userRef = ref(database, `rooms/${ROOM_ID}/participants/${userId}`);
+                const snapshot = await getSnapshot(userRef);
+                const user = snapshot.val();
                 
-                await participantRef.update({
-                    isMuted: !participant.isMuted
+                await update(userRef, {
+                    isMuted: !user.isMuted
                 });
                 
-                showNotification(`${participant.name} ${participant.isMuted ? 'unmuted' : 'muted'}`, 'info');
+                showNotification(
+                    user.isMuted ? 'Unmuted' : 'Muted',
+                    `${user.name} has been ${user.isMuted ? 'unmuted' : 'muted'}`,
+                    'info'
+                );
             } catch (error) {
-                console.error('Error muting participant:', error);
+                console.error('Toggle mute error:', error);
             }
         }
 
         // Remove Participant
-        async function removeParticipant(participantId) {
+        async function removeParticipant(userId) {
             if (userRole !== 'owner' && userRole !== 'admin') return;
             
             try {
-                await database.ref(`rooms/${roomId}/participants/${participantId}`).remove();
+                // Remove from participants
+                const userRef = ref(database, `rooms/${ROOM_ID}/participants/${userId}`);
+                await remove(userRef);
                 
                 // Remove any pending requests
-                await database.ref(`rooms/${roomId}/requests/${participantId}`).remove();
+                const requestRef = ref(database, `rooms/${ROOM_ID}/requests/${userId}`);
+                await remove(requestRef);
                 
-                showNotification('Participant removed', 'info');
+                showNotification('Participant Removed', 'User has been removed from the room', 'warning');
             } catch (error) {
-                console.error('Error removing participant:', error);
+                console.error('Remove participant error:', error);
             }
         }
 
         // Make Admin
-        async function makeAdmin(participantId) {
+        async function makeAdmin(userId) {
             if (userRole !== 'owner') return;
             
             try {
-                await database.ref(`rooms/${roomId}/participants/${participantId}/role`).set('admin');
-                showNotification('User promoted to admin', 'success');
+                const userRef = ref(database, `rooms/${ROOM_ID}/participants/${userId}`);
+                await update(userRef, {
+                    role: 'admin'
+                });
+                
+                showNotification('Admin Promoted', 'User is now an admin', 'success');
             } catch (error) {
-                console.error('Error making admin:', error);
+                console.error('Make admin error:', error);
             }
         }
 
         // End Call
         async function endCall() {
-            if (userRole !== 'owner') return;
+            if (userRole !== 'owner') {
+                showNotification('Permission Denied', 'Only room owner can end the call', 'error');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to end the conference for everyone?')) return;
             
             try {
                 // Update room status
-                await database.ref(`rooms/${roomId}`).update({
-                    active: false
+                const roomRef = ref(database, `rooms/${ROOM_ID}`);
+                await update(roomRef, {
+                    status: 'ended',
+                    endedAt: Date.now(),
+                    endedBy: currentUserId
                 });
                 
-                // Remove all participants
-                await database.ref(`rooms/${roomId}/participants`).remove();
+                showNotification('Conference Ended', 'The room has been closed for all participants', 'warning');
                 
-                // Close all peer connections
-                Object.values(peers).forEach(peer => peer.destroy());
+                // Clean up
+                cleanupConnections();
                 
-                // Stop local stream
-                if (localStream) {
-                    localStream.getTracks().forEach(track => track.stop());
-                }
-                
-                showNotification('Call ended. Room is now closed.', 'info');
-                
-                // Reload page after delay
+                // Redirect after delay
                 setTimeout(() => {
                     window.location.reload();
-                }, 2000);
+                }, 3000);
                 
             } catch (error) {
-                console.error('Error ending call:', error);
+                console.error('End call error:', error);
             }
         }
 
-        // Update Audio Level
-        function updateAudioLevel(userId) {
-            const analyser = analysers[userId];
-            if (!analyser) return;
-            
-            const dataArray = new Uint8Array(analyser.frequencyBinCount);
-            analyser.getByteFrequencyData(dataArray);
-            
-            const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-            const level = Math.min(100, (average / 128) * 100);
-            
-            const levelEl = document.getElementById(`audio-level-${userId}`);
-            if (levelEl) {
-                levelEl.style.width = `${level}%`;
-            }
-        }
-
-        // Show Notification
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.innerHTML = `
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
-                <span>${message}</span>
-            `;
-            
-            document.body.appendChild(notification);
+        // Handle Room Ended
+        function handleRoomEnded() {
+            showNotification('Room Closed', 'The owner has ended the conference', 'warning');
+            cleanupConnections();
             
             setTimeout(() => {
-                notification.remove();
-            }, 3000);
+                window.location.reload();
+            }, 5000);
         }
+
+        // Cleanup Connections
+        function cleanupConnections() {
+            // Close all peer connections
+            peers.forEach(peer => {
+                try {
+                    peer.destroy();
+                } catch (e) {
+                    console.error('Peer destroy error:', e);
+                }
+            });
+            peers.clear();
+            
+            // Stop local stream
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Clear audio analyzers
+            audioAnalyzers.clear();
+        }
+
+        // Update Connection Status
+        function updateConnectionStatus(status) {
+            connectionState = status;
+            connectionStatus.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            
+            const indicator = document.querySelector('.status-indicator');
+            if (indicator) {
+                indicator.style.background = 
+                    status === 'connected' ? 'var(--success)' :
+                    status === 'connecting' ? 'var(--warning)' :
+                    'var(--danger)';
+            }
+        }
+
+        // Make functions available globally
+        window.toggleMute = toggleMute;
+        window.removeParticipant = removeParticipant;
+        window.makeAdmin = makeAdmin;
+        window.handleRequest = handleRequest;
 
         // Event Listeners
         requestSpeakBtn.addEventListener('click', requestToSpeak);
         endCallBtn.addEventListener('click', endCall);
 
-        // Initialize when page loads
-        window.addEventListener('load', initApp);
+        // Network monitoring
+        window.addEventListener('online', () => {
+            updateConnectionStatus('connected');
+            showNotification('Back Online', 'Connection restored', 'success');
+        });
+        
+        window.addEventListener('offline', () => {
+            updateConnectionStatus('disconnected');
+            showNotification('Connection Lost', 'Trying to reconnect...', 'error');
+        });
 
-        // Handle page unload
-        window.addEventListener('beforeunload', async () => {
-            if (userId) {
-                // Remove user from participants
-                await database.ref(`rooms/${roomId}/participants/${userId}`).remove();
-                
-                // Remove any pending requests
-                await database.ref(`rooms/${roomId}/requests/${userId}`).remove();
-                
-                // Close peer connections
-                Object.values(peers).forEach(peer => peer.destroy());
-                
-                // Stop local stream
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            updateConnectionStatus('connecting');
+            initializeApp();
+        });
+
+        // Handle visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                // User switched tabs or minimized browser
                 if (localStream) {
-                    localStream.getTracks().forEach(track => track.stop());
+                    localStream.getTracks().forEach(track => {
+                        track.enabled = false;
+                    });
+                }
+            } else {
+                // User returned
+                if (localStream) {
+                    localStream.getTracks().forEach(track => {
+                        track.enabled = true;
+                    });
                 }
             }
         });
+
     </script>
+
+    <!-- SimplePeer from CDN (needs to be loaded after module script) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.11.1/simplepeer.min.js"></script>
 </body>
 </html>
