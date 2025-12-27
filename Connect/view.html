@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HERO Sports Meet - Live View</title>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Comfortaa:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-black: #000000;
+            --bg-card: #1a1a1a;
+            --text-white: #ffffff;
+            --text-light: #e0e0e0;
+            --text-gray: #888888;
+            --border-light: rgba(255, 255, 255, 0.1);
+            --border-medium: rgba(255, 255, 255, 0.2);
+            --accent-red: #ff4444;
+            --accent-yellow: #ffcc00;
+            --accent-blue: #4a90e2;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-black);
+            color: var(--text-white);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .view-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .view-logo {
+            height: 80px;
+            width: auto;
+            filter: brightness(0) invert(1);
+            margin-bottom: 1rem;
+        }
+
+        .view-title {
+            font-family: 'Comfortaa', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .view-subtitle {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        /* Sections */
+        .sections-container {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid var(--border-light);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid;
+        }
+
+        .section-header.leaders {
+            border-color: var(--accent-red);
+        }
+
+        .section-header.speakers {
+            border-color: var(--accent-yellow);
+        }
+
+        .section-header.guests {
+            border-color: var(--text-white);
+        }
+
+        .section-icon {
+            font-size: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .section-subtitle {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Grid Layouts */
+        .leaders-grid {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .speakers-grid,
+        .guests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            justify-items: center;
+        }
+
+        /* Participant Cards */
+        .participant-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 350px;
+            aspect-ratio: 4/3;
+        }
+
+        .participant-card.speaking {
+            border-color: var(--text-white);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .participant-card.owner,
+        .participant-card.admin {
+            border-color: var(--accent-red);
+        }
+
+        .participant-card.main-speaker {
+            border-color: var(--accent-yellow);
+        }
+
+        .participant-card.guest {
+            border-color: var(--border-medium);
+        }
+
+        .participant-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(20px) brightness(0.5);
+            opacity: 0.6;
+        }
+
+        .participant-content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+        }
+
+        .participant-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--text-white);
+            margin-bottom: 1rem;
+        }
+
+        .participant-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .participant-role {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .audio-indicator {
+            margin-top: 1rem;
+            width: 80%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .audio-level {
+            height: 100%;
+            width: 0%;
+            background: var(--text-white);
+            border-radius: 2px;
+            transition: width 0.1s ease-out;
+        }
+
+        .message-bubble {
+            position: absolute;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: var(--text-white);
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            max-width: 85%;
+            word-break: break-word;
+            z-index: 10;
+            border: 1px solid var(--border-light);
+            backdrop-filter: blur(10px);
+            animation: fadeInOut 7s forwards;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* No Participants */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-gray);
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .speakers-grid,
+            .guests-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .view-title {
+                font-size: 2rem;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .speakers-grid,
+            .guests-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+
+            .participant-card {
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .view-logo {
+                height: 60px;
+            }
+
+            .view-title {
+                font-size: 1.5rem;
+            }
+
+            .leaders-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .speakers-grid,
+            .guests-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .participant-card {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="view-header">
+            <img src="https://i.ibb.co/DsrGTPk/HERO-SPORTS-TALKS-removebg-preview.png" alt="HERO Sports" class="view-logo">
+            <h1 class="view-title">HERO Sports Meet</h1>
+            <p class="view-subtitle">Live Conference View</p>
+        </div>
+
+        <div class="sections-container">
+            <!-- Leaders Section -->
+            <div class="section">
+                <div class="section-header leaders">
+                    <i class='bx bx-crown section-icon' style="color: var(--accent-red);"></i>
+                    <div>
+                        <div class="section-title">Leaders</div>
+                        <div class="section-subtitle">Room Owner & Admins</div>
+                    </div>
+                </div>
+                <div class="leaders-grid" id="leadersGrid">
+                    <div class="empty-state" id="leadersEmpty">
+                        <i class='bx bx-crown empty-icon'></i>
+                        <div>No leaders currently in the call</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Speakers Section -->
+            <div class="section">
+                <div class="section-header speakers">
+                    <i class='bx bx-microphone section-icon' style="color: var(--accent-yellow);"></i>
+                    <div>
+                        <div class="section-title">Main Speakers</div>
+                        <div class="section-subtitle">Assigned by Leaders</div>
+                    </div>
+                </div>
+                <div class="speakers-grid" id="speakersGrid">
+                    <div class="empty-state" id="speakersEmpty">
+                        <i class='bx bx-microphone empty-icon'></i>
+                        <div>No main speakers currently in the call</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Guests Section -->
+            <div class="section">
+                <div class="section-header guests">
+                    <i class='bx bx-user section-icon'></i>
+                    <div>
+                        <div class="section-title">Guests</div>
+                        <div class="section-subtitle">Conference Participants</div>
+                    </div>
+                </div>
+                <div class="guests-grid" id="guestsGrid">
+                    <div class="empty-state" id="guestsEmpty">
+                        <i class='bx bx-user empty-icon'></i>
+                        <div>No guests currently in the call</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAEjkoZ6xNZbNHdW1QDddYrBTVXxHgnIRc",
+            authDomain: "rosine-e-commerce.firebaseapp.com",
+            databaseURL: "https://rosine-e-commerce-default-rtdb.firebaseio.com",
+            projectId: "rosine-e-commerce",
+            storageBucket: "rosine-e-commerce.firebasestorage.app",
+            messagingSenderId: "143638702824",
+            appId: "1:143638702824:web:faa956ee5b50c9766ab75d",
+            measurementId: "G-4CWT0L3Y98"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const database = firebase.database();
+        const ROOM_ID = 'hero_sports_conference';
+
+        // DOM Elements
+        const leadersGrid = document.getElementById('leadersGrid');
+        const speakersGrid = document.getElementById('speakersGrid');
+        const guestsGrid = document.getElementById('guestsGrid');
+        const leadersEmpty = document.getElementById('leadersEmpty');
+        const speakersEmpty = document.getElementById('speakersEmpty');
+        const guestsEmpty = document.getElementById('guestsEmpty');
+
+        // Initialize View
+        function initView() {
+            setupFirebaseListeners();
+        }
+
+        // Setup Firebase Listeners
+        function setupFirebaseListeners() {
+            // Listen to participants
+            const participantsRef = database.ref(`rooms/${ROOM_ID}/participants`);
+            participantsRef.on('value', (snapshot) => {
+                updateParticipantsView(snapshot.val());
+            });
+            
+            // Listen to messages
+            const messagesRef = database.ref(`rooms/${ROOM_ID}/messages`);
+            messagesRef.limitToLast(10).on('value', (snapshot) => {
+                updateMessages(snapshot.val());
+            });
+        }
+
+        // Update Participants View
+        function updateParticipantsView(participants) {
+            if (!participants) {
+                participants = {};
+            }
+            
+            const participantsArray = Object.values(participants);
+            
+            // Filter participants by role
+            const leaders = participantsArray.filter(p => p.role === 'owner' || p.role === 'admin');
+            const mainSpeakers = participantsArray.filter(p => p.role === 'main-speaker');
+            const guests = participantsArray.filter(p => p.role === 'guest');
+            
+            // Update leaders section
+            updateSection('leaders', leaders);
+            
+            // Update speakers section
+            updateSection('speakers', mainSpeakers);
+            
+            // Update guests section
+            updateSection('guests', guests);
+        }
+
+        // Update Section
+        function updateSection(section, participants) {
+            const container = document.getElementById(`${section}Grid`);
+            const emptyState = document.getElementById(`${section}Empty`);
+            
+            // Clear existing content
+            const existingCards = container.querySelectorAll('.participant-card');
+            existingCards.forEach(card => {
+                if (!card.classList.contains('empty-state')) {
+                    card.remove();
+                }
+            });
+            
+            // Hide empty state if there are participants
+            if (participants.length > 0) {
+                emptyState.style.display = 'none';
+                
+                // Add participant cards
+                participants.forEach(participant => {
+                    const card = createParticipantCard(participant);
+                    container.appendChild(card);
+                });
+            } else {
+                emptyState.style.display = 'block';
+            }
+        }
+
+        // Create Participant Card
+        function createParticipantCard(participant) {
+            const card = document.createElement('div');
+            card.className = `participant-card ${participant.role} ${participant.isSpeaking ? 'speaking' : ''}`;
+            card.id = `participant-${participant.id}`;
+            
+            card.innerHTML = `
+                <div class="participant-bg" style="background-image: url('${participant.photo}')"></div>
+                <div class="participant-content">
+                    <img src="${participant.photo}" alt="${participant.name}" class="participant-avatar">
+                    <div class="participant-name">${participant.name}</div>
+                    <div class="participant-role">
+                        <i class='bx ${getRoleIcon(participant.role)}'></i>
+                        ${getRoleDisplayName(participant.role)}
+                    </div>
+                    <div class="audio-indicator">
+                        <div class="audio-level" id="audio-level-${participant.id}"></div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Get Role Icon
+        function getRoleIcon(role) {
+            switch(role) {
+                case 'owner': return 'bx-crown';
+                case 'admin': return 'bx-shield';
+                case 'main-speaker': return 'bx-microphone';
+                default: return 'bx-user';
+            }
+        }
+
+        // Get Role Display Name
+        function getRoleDisplayName(role) {
+            switch(role) {
+                case 'owner': return 'Owner';
+                case 'admin': return 'Admin';
+                case 'main-speaker': return 'Main Speaker';
+                default: return 'Guest';
+            }
+        }
+
+        // Update Messages
+        function updateMessages(messages) {
+            if (!messages) return;
+            
+            const messagesArray = Object.values(messages);
+            const lastMessage = messagesArray[messagesArray.length - 1];
+            
+            if (lastMessage) {
+                showMessageBubble(lastMessage.senderId, lastMessage.text);
+            }
+        }
+
+        // Show Message Bubble
+        function showMessageBubble(senderId, text) {
+            const participantCard = document.getElementById(`participant-${senderId}`);
+            if (!participantCard) return;
+            
+            // Remove existing bubble
+            const existingBubble = participantCard.querySelector('.message-bubble');
+            if (existingBubble) {
+                existingBubble.remove();
+            }
+            
+            // Add new bubble
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = text.length > 30 ? text.substring(0, 30) + '...' : text;
+            participantCard.appendChild(bubble);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initView);
+
+    </script>
+</body>
+</html>
